@@ -1,0 +1,40 @@
+body {}
+
+div#wrap {
+
+}
+
+#wrap>div {}
+
+.nav {}
+
+div#main {
+    width: 500%;
+}
+
+div[id*="panel"] {}
+
+.botonera>div {}
+
+.boton {}
+
+.screen {}
+
+button {}
+
+.botonera button {}
+
+.botonera h2 {}
+
+.panel {}
+
+:root {}
+
+#main {}
+
+
+div#app {}
+
+.modal {}
+
+.screen {}

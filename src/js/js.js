@@ -16,8 +16,13 @@ var vm = new Vue({
         act_theme_text: ["black", "color", "white"],
         act_theme: 1,
         sesionName: "nombre",
+        rounds: 0,
         segundos: 60,
         minutos: 2,
+        running: false,
+        sts_panel: 0,
+        status: "round",
+        fontSize:5,
         sesiones: [{
                 nombre: "combate",
                 rounds: 1,
@@ -40,22 +45,80 @@ var vm = new Vue({
                 preaviso: 0
             }
         ],
-      running: false
-
     },
+    computed: {
+  classObject: function () {
+    return 
+      "transform9"
+    
+  }
+},
     methods: {
         pause: function() {
-            this.running=false;
+            this.running = false;
             clearInterval(this.crono);
-             this.segundos=60;
+            this.segundos = 60;
         },
         go: function() {
             const myself = this;
-            this.running=true;
-             myself.crono = setInterval(
+            this.running = true;
+            this.minutos = this.act_time-1;
+            this.rounds = this.act_rounds;
+            asalto();
+            function asalto(){
+                this.minutos = this.act_time;
+            myself.crono = setInterval(
                 function() {
                     myself.segundos--;
-                }, 1000);
+                    if (myself.segundos == 0) {
+                      myself.segundos = 60;
+                       myself.minutos--;
+                        console.log(myself.minutos);
+                        if (myself.minutos < 0) {
+                            clearInterval(myself.crono);
+
+                                  if (myself.rounds>1){
+                                   myself.rounds--;
+                                  myself.minutos =1;
+                            descanso();
+} else {
+   myself.status = "fin";
+}
+
+
+
+                        }
+                    }
+
+                    function descanso() {
+                  
+                             
+
+                        myself.status = "descanso";
+                        myself.descrono = setInterval(
+                            function() {
+                                myself.segundos--;
+                                if (myself.segundos < 0) {
+                                    clearInterval(myself.descrono);
+                                  
+                                    if (myself.rounds > 0) {
+                                        myself.status = "round";
+                                        myself.minutos= myself.act_time-1;
+                                      myself.segundos = 60;
+                                        asalto();
+                                    } else {
+                                       console.log("finito");
+                                    }
+                                         
+                                }
+
+                            }, 50);
+                    }
+                },50);
+
+}
+
+
         },
         add: function(variable) {
             if (this[variable + "_text"]) {
@@ -74,6 +137,18 @@ var vm = new Vue({
                 }
             }
             this[variable] -= 1 * (this[variable] > 0);
+        },
+        setPanel(sesion) {
+
+
+        },
+
+        setSesion(sesion) {
+            this.act_rounds = sesion.rounds;
+            this.act_time = sesion.time;
+            this.act_desc = sesion.desc;
+            this.act_preaviso = sesion.preaviso;
+
         },
         deleteSesion(sesion) {
             const todoIndex = this.sesiones.indexOf(sesion);

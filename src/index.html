@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#008000" />
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" media="screen" href="css/main.css">
-    <link rel="stylesheet" media="screen" href="css/theme.css">
+    <link rel="stylesheet" media="screen" href="css/layout.css">
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="https://unpkg.com/vue@2.0.1/dist/vue.js"></script>
 </head>
@@ -28,112 +28,121 @@
 
         <body class="home">
             <div id="wrap">
-                <div class="screen">
-                    <div class="clock">
-                        <div>Rounds {{act_rounds}}</div>
-                        <h1>tiempo {{segundos}} - {{minutos}}</h1>
-                       
-                    </div>
-                     <div  v-if="running"  @click="pause()" class="boton"><h1>II</h1></div>
-                    <div  v-if="!running" class="boton" @click="go()">
-                        <h1>GO</h1>
-                    </div>
-                </div>
-                <div id="main">
+                <div id="main"  v-bind:style="{ transform:  'translatex(calc(-20 * '+sts_panel+'%)' }">
                     <div id="panel_main" class="panel">
+
                         <div class="botonera">
                             <div id="asaltos">
-                                <div class="boton" @click="sub('act_rounds')">-</div>
+<button @click="sub('act_rounds')">-</button>
                                 <h2>Asaltos  {{act_rounds}}</h2>
-                                <div class="boton" @click="add('act_rounds')">+</div>
+                                <button  @click="add('act_rounds')">+</button>
                             </div>
                             <div id="tiempo_asaltos">
-                                <div class="boton" @click="sub('act_time')">-</div>
+                                <button @click="sub('act_time')">-</button>
                                 <h2>tiempo asaltos {{act_time}}</h2>
-                                <div class="boton" @click="add('act_time')">+</div>
+                                <button   @click="add('act_time')">+</button>
                             </div>
                             <div id="tiempo_descanso">
-                                <div class="boton" @click="sub('act_desc')">-</div>
+                                <button  @click="sub('act_desc')">-</button>
                                 <h2>descanso  {{act_desc}}</h2>
-                                <div class="boton" @click="add('act_desc')">+</div>
+                                <button  @click="add('act_desc')">+</button>
                             </div>
                             <div id="preaviso">
-                                <div class="boton" @click="sub('act_preaviso')">-</div>
+                                <button  @click="sub('act_preaviso')">-</button>
                                 <h2>preaviso {{act_preaviso_text[act_preaviso]}}</h2>
-                                <div class="boton" @click="add('act_preaviso')">+</div>
+                                <button @click="add('act_preaviso')">+</button>
                             </div>
+                        </div>
+                                                <div class="screen">
+                            
+                         
+                                <button v-if="status=='round'" @click="pause()" >
+
+                                    <h1>{{status}}</h1>
+                                     <h1> {{(act_rounds-rounds+1)}}/{{act_rounds}}</h1>
+                                  <h1> {{minutos}}:{{segundos}} </h1>
+                                 <h1>II</h1>
+                                </button>
+                                <button v-if="!running" @click="go()">
+                                           <div class="info">
+                                   <div>{{act_rounds}} Rounds de</div>
+                                    <h1> {{act_time}} Minutos </h1><h1>{{act_desc}} de descanso de  </h1>
+                                </div>
+                             <h1>GO</h1>
+                                </button>
+                       
                         </div>
                     </div>
                     <div id="panel_config" class="panel">
                         <div class="botonera">
                             <div>
-                                <div class="boton" @click="sub('act_idioma')">-</div>
+                                 <button @click="sub('act_idioma')">-</button>
                                 <h2>Idioma: {{act_idioma_text[act_idioma]}} </h2>
-                                <div class="boton" @click="add('act_idioma')">+</div>
+                                <button @click="add('act_idioma')">+</button>
                             </div>
                             <div>
-                                <div class="boton" @click="sub('act_theme')">-</div>
+                                <button @click="sub('act_theme')">-</button>
                                 <h2>plantilla {{act_theme_text[act_theme]}}</h2>
-                                <div class="boton" @click="add('act_theme')">+</div>
+                                <button @click="add('act_theme')">+</button>
                             </div>
                         </div>
                     </div>
                     <div id="panel_sonido" class="panel">
                         <div class="botonera">
                             <div>
-                                <div class="boton" @click="sub('sonido_asaltos')">-</div>
+                                <button @click="sub('sonido_asaltos')">-</button>
                                 <h2>Asalto: {{act_sonidos_text[sonido_asaltos]}}</h2>
-                                <div class="boton" @click="add('sonido_asaltos')">+</div>
+                                <button @click="add('sonido_asaltos')">+</button>
                             </div>
                             <div>
-                                <div class="boton" @click="sub('sonido_descanso')">-</div>
+                               <button @click="sub('sonido_descanso')">-</button>
                                 <h2>Descanso {{act_sonidos_text[sonido_descanso]}}</h2>
-                                <div class="boton" @click="add('sonido_descanso')">+</div>
+                                <button @click="add('sonido_descanso')">+</button>
                             </div>
                             <div>
-                                <div class="boton" @click="sub('sonido_fin')">-</div>
+                                <button @click="sub('sonido_fin')">-</button>
                                 <h2>Fin combate {{act_sonidos_text[sonido_fin]}}</h2>
-                                <div class="boton" @click="add('sonido_fin')">+</div>
+                                <button @click="add('sonido_fin')">+</button>
                             </div>
                             <div>
-                                <div class="boton" @click="sub('sonido_preaviso')">-</div>
+                                <button @click="sub('sonido_preaviso')">-</button>
                                 <h2>preaviso  {{act_sonidos_text[sonido_preaviso]}}</h2>
-                                <div class="boton" @click="add('sonido_preaviso')">+</div>
+                                 <button @click="add('sonido_preaviso')">+</button>
                             </div>
                         </div>
                     </div>
                     <div id="panel_sesiones" class="panel">
+                         <button @click="addSesion()">Añadir sesion</button>
                         <div class="modal">
                             <div>Nombre de la sesion</div><input v-model="sesionName" type="text" ref="title" defaultValue="">
                         </div>
                         <div class="botonera">
                             <div v-for="item in sesiones">
-                                <h2> {{ item.nombre }}</h2>
-                                {{ item.rounds }} -{{ item.time }} -{{ item.desc }}- {{ item.preaviso }}
-                                <div class="boton" @click="deleteSesion(item)">x</div>
+                                <button @click="setSesion(item)" class="text"> {{ item.nombre }}  {{ item.rounds }} -{{ item.time }} -{{ item.desc }}- {{ item.preaviso }}</button>
+                               
+                                <button @click="deleteSesion(item)">x</button>
                             </div>
                         </div>
-                        <div class="botonera">
-                        </div>
-                        <div class="boton" @click="addSesion()">Añadir sesion</div>
+                        <div class="status">   <div class="info">
+                                   <h2>Rounds :{{act_rounds}}</h2>
+                                    <h1>Minutos {{segundos}} - {{act_time}}</h1>
+                                </div></div>
+                       
                     </div>
                     <div id="panel_trainer" class="panel">
                         <div class="botonera">
                             <div>
-                                <div class="boton">Añadir sesion</div>
+                                <button>Añadir sesion</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="nav ">
-           
-                    <label class="boton" for="bot_main">Principal</label>
-                    <label class="boton" for="bot_config">Configuracion</label>
-                    <label class="boton" for="bot_sonido">Sonido</label>
-
-                    <label class="boton" for="bot_sesiones">Sesiones</label>
-                    <label class="boton" for="bot_trainer"> Trainer</label>
-             
+                   <button  @click="sts_panel = 0" > Principal</button>
+                   <button  @click="sts_panel = 1" >Configuracion</button>
+                    <button  @click="sts_panel = 2" >Sonido</button>
+                    <button  @click="sts_panel = 3" >Sesiones</button>
+                    <button  @click="sts_panel = 4" > Trainer</button>
                 </div>
             </div>
         </body>
