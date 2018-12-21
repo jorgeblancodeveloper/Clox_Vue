@@ -1,169 +1,222 @@
+Vue.filter('time', function(value) {
+
+    let minutes = parseInt(Math.floor((value) / 60));
+    let seconds = parseInt((value - ((minutes * 60))) % 60);
+
+
+    let dMins = (minutes > 9 ? minutes : '0' + minutes);
+    let dSecs = (seconds > 9 ? seconds : '0' + seconds);
+
+    return dMins + ":" + dSecs;
+});
+
+Vue.component('mimodal', {
+    data: function () {
+  return {
+    mitexto: "namesesion"
+  }
+},
+  props: ['msj'],
+    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="close()">Confirmar</button> </div></div></main></div>',
+     methods: {
+    close: function () {
+        this.$emit('recibido',this.mitexto)
+      this.$parent.closemodal();
+    }
+  }
+})
+
+
 var vm = new Vue({
     el: '#app',
     data: {
-        act_time: 4,
-        act_rounds: 4,
-        act_desc: 1,
-        act_preaviso: 1,
-        act_preaviso_text: ["asalto", "descanso", "asalto y descanso", "nada"],
-        act_idioma_text: ["Español", "Catalan", "ingles"],
-        act_sonidos_text: ["sirena", "campana", "dong", "buzzer", "slap", "timbre"],
-        sonido_asaltos: 1,
-        sonido_descanso: 0,
-        sonido_preaviso: 2,
-        sonido_fin: 3,
-        act_idioma: 0,
-        act_theme_text: ["black", "color", "white"],
-        act_theme: 1,
-        sesionName: "nombre",
-        rounds: 0,
-        segundos: 60,
-        minutos: 2,
-        running: false,
-        sts_panel: 0,
-        status: "round",
-        fontSize:5,
-        sesiones: [{
-                nombre: "combate",
-                rounds: 1,
-                time: 3,
-                desc: 60,
-                preaviso: 0
-            },
-            {
-                nombre: "calentamiento",
-                rounds: 2,
-                time: 2,
-                desc: 60,
-                preaviso: 0
-            },
-            {
-                nombre: "entrenamiento",
-                rounds: 3,
-                time: 1,
-                desc: 60,
-                preaviso: 0
-            }
-        ],
+        a: {
+            misdata:"",
+            backup: "",
+            act_time: 240,
+            act_rounds: 4,
+            act_desc: 60,
+            act_preaviso: 1,
+            act_preaviso_text: ["asalto", "descanso", "asalto y descanso", "nada"],
+            act_idioma_text: ["Español", "Catalan", "ingles"],
+            act_sonidos_text: ["sirena", "campana", "dong", "buzzer", "slap", "timbre"],
+            sonido_asaltos: 1,
+            sonido_descanso: 0,
+            sonido_preaviso: 2,
+            sonido_fin: 3,
+            act_idioma: 0,
+            act_theme_text: ["black", "color", "white"],
+            act_theme: 1,
+            sesiontitle: "",
+            sesionName: "Nombre sesion",
+            txtmodal: "jkl",
+            rounds: 0,
+            segundos: 60,
+            minutos: 2,
+            running: false,
+            sts_panel: 0,
+            status: "main",
+            fontSize: 5,
+            sesiones: [{
+                    nombre: "combate",
+                    rounds: 1,
+                    time: 3,
+                    desc: 60,
+                    preaviso: 0
+                },
+                {
+                    nombre: "calentamiento",
+                    rounds: 2,
+                    time: 2,
+                    desc: 60,
+                    preaviso: 0
+                },
+                {
+                    nombre: "entrenamiento",
+                    rounds: 3,
+                    time: 1,
+                    desc: 60,
+                    preaviso: 0
+                }
+            ],
+        }
     },
-    computed: {
-  classObject: function () {
-    return 
-      "transform9"
-    
-  }
-},
+
+    created() {
+        console.log(this.a.running)
+     /*   window.addEventListener('beforeunload', autosave());
+        if (localStorage.backup) {
+            console.log("cargoa");
+            this.a = JSON.parse(localStorage.backup);
+           // this.a.sesiontitle= "";
+        }
+        var my = this
+        function autosave() {
+            console.log("mevoy");
+            // my.saveall()
+        }*/
+    },
     methods: {
+        saveall: function() {
+            this.a.backup = JSON.stringify(this.a);
+            console.log(this.a.backup);
+            console.log("guarddo");
+            localStorage.backup = this.a.backup;
+        },
         pause: function() {
-            this.running = false;
-            clearInterval(this.crono);
-            this.segundos = 60;
+            this.a.running = false;
+            clearInterval(this.a.crono);
+            this.a.segundos = 60;
+            console.log(this.a.running)
         },
         go: function() {
-            const myself = this;
-            this.running = true;
-            this.minutos = this.act_time-1;
-            this.rounds = this.act_rounds;
+            console.log(this.a.running)
+            const myself = this.a;
+            this.a.running = true;
+            this.a.rounds = this.a.act_rounds;
+            this.a.minutos = this.a.act_time;
             asalto();
-            function asalto(){
-                this.minutos = this.act_time;
-            myself.crono = setInterval(
-                function() {
-                    myself.segundos--;
-                    if (myself.segundos == 0) {
-                      myself.segundos = 60;
-                       myself.minutos--;
-                        console.log(myself.minutos);
-                        if (myself.minutos < 0) {
+            this.a.saveall;
+            function asalto() {
+                myself.crono = setInterval(
+                    function() {
+                        myself.minutos--;
+                        if (myself.minutos == 0) {
                             clearInterval(myself.crono);
-
-                                  if (myself.rounds>1){
-                                   myself.rounds--;
-                                  myself.minutos =1;
-                            descanso();
-} else {
-   myself.status = "fin";
-}
-
-
-
+                            if (myself.rounds > 1) {
+                                myself.rounds--;
+                                myself.minutos = myself.act_desc;
+                                descanso();
+                            } else {
+                                myself.status = "fin";
+                            }
                         }
-                    }
 
-                    function descanso() {
-                  
-                             
+                        function descanso() {
+                            myself.status = "descanso";
+                            myself.descrono = setInterval(
+                                function() {
+                                    myself.minutos--;
+                                    if (myself.minutos < 0) {
+                                        clearInterval(myself.descrono);
 
-                        myself.status = "descanso";
-                        myself.descrono = setInterval(
-                            function() {
-                                myself.segundos--;
-                                if (myself.segundos < 0) {
-                                    clearInterval(myself.descrono);
-                                  
-                                    if (myself.rounds > 0) {
-                                        myself.status = "round";
-                                        myself.minutos= myself.act_time-1;
-                                      myself.segundos = 60;
-                                        asalto();
-                                    } else {
-                                       console.log("finito");
+                                        if (myself.rounds > 0) {
+                                            myself.status = "round";
+                                            myself.minutos = myself.act_time;
+                                            asalto();
+                                        } else {
+                                            console.log("finito");
+                                        }
                                     }
-                                         
-                                }
 
-                            }, 50);
-                    }
-                },50);
-
-}
+                                }, 50);
+                        }
+                    }, 50);
+            }
 
 
         },
-        add: function(variable) {
-            if (this[variable + "_text"]) {
-                if (this[variable] > this[variable + "_text"].length) {
-                    this[variable] = 0;
+        closemodal: function(){
+             console.log("cierro");
+        },
+        add: function(variable, valor) {
+      
+            if (valor == undefined) valor = 1;
+            if (this.a[variable + "_text"]) {
+                if (this.a[variable] > this.a[variable + "_text"].length) {
+                    this.a[variable] = 0;
                     return
                 }
             }
-            this[variable]++;
+                    console.log( this.a[variable]);
+            this.a[variable] += valor * 1;
         },
-        sub: function(variable) {
-            if (this[variable + "_text"]) {
-                if (this[variable] == 0) {
-                    this[variable] = this[variable + "_text"].length - 1;
+        sub: function(variable, valor) {
+              console.log("cierro");
+            if (valor == undefined) valor = 1;
+            if (this.a[variable + "_text"]) {
+                if (this.a[variable] == 0) {
+                    this.a[variable] = this.a[variable + "_text"].length - 1;
                     return
                 }
             }
-            this[variable] -= 1 * (this[variable] > 0);
+            this.a[variable] -= (1 * valor) * (this.a[variable] > 0);
         },
-        setPanel(sesion) {
-
-
-        },
+        setPanel(sesion) {},
 
         setSesion(sesion) {
-            this.act_rounds = sesion.rounds;
-            this.act_time = sesion.time;
-            this.act_desc = sesion.desc;
-            this.act_preaviso = sesion.preaviso;
+            this.a.act_rounds = sesion.rounds;
+            this.a.act_time = sesion.time;
+            this.a.act_desc = sesion.desc;
+            this.a.act_preaviso = sesion.preaviso;
 
         },
-        deleteSesion(sesion) {
-            const todoIndex = this.sesiones.indexOf(sesion);
-            this.sesiones.splice(todoIndex, 1);
+        deleteSesion(event, item) {
+    //this.a.sesiontitle="dsff";
+            console.log(console.log(event.target.parentElement));
+            event.target.parentElement.className += " delete";
+            const todoIndex = this.a.sesiones.indexOf(item);
+            var missesiones = this.a.sesiones;
+            setTimeout(function() {
+                missesiones.splice(todoIndex, 1);
+            }, 800);
+        },
+        close(datos) {
+            console.log("llego" +datos);
+                                  var newitem = {
+                nombre: datos,
+                rounds: this.a.act_rounds,
+                time: this.a.act_time,
+                desc: this.a.act_desc,
+                preaviso: this.a.act_preaviso
+            }
+            this.a.sesiones.push(newitem);
+                        this.a.sesiontitle="";
         },
         addSesion() {
-            var newitem = {
-                nombre: this.sesionName,
-                rounds: this.act_rounds,
-                time: this.act_time,
-                desc: this.act_desc,
-                preaviso: this.act_preaviso
-            }
-            this.sesiones.push(newitem);
-            console.log(this.sesiones);
+console.log("pinffn");
+            this.a.sesiontitle="Nombre de la sesion?";
+
         }
     }
 })

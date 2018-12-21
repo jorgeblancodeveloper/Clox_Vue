@@ -27,62 +27,58 @@
     <div id="app">
 
         <body class="home">
-            <div id="wrap">
-                <div id="main"  v-bind:style="{ transform:  'translatex(calc(-20 * '+sts_panel+'%)' }">
+            <div id="wrap" v-bind:class="{ active: a.running }">
+                <mimodal v-if="a.sesiontitle!=''" :msj="a.sesiontitle" v-on:recibido='close'></mimodal>
+                <div id="main" v-bind:style="{ transform:  'translatex(calc(-20 * '+a.sts_panel+'%)' }">
                     <div id="panel_main" class="panel">
-
                         <div class="botonera">
                             <div id="asaltos">
-<button @click="sub('act_rounds')">-</button>
-                                <h2>Asaltos  {{act_rounds}}</h2>
-                                <button  @click="add('act_rounds')">+</button>
+                                <button @click="sub('act_rounds')">-</button>
+                                <h2>Asaltos  {{a.act_rounds}}</h2>
+                                <button @click="add('act_rounds')">+</button>
                             </div>
                             <div id="tiempo_asaltos">
-                                <button @click="sub('act_time')">-</button>
-                                <h2>tiempo asaltos {{act_time}}</h2>
-                                <button   @click="add('act_time')">+</button>
+                                <button @click="sub('act_time', 30)">-</button>
+                                <h2>tiempo asaltos {{a.act_time | time}}</h2>
+                                <button @click="add('act_time',30)">+</button>
                             </div>
                             <div id="tiempo_descanso">
-                                <button  @click="sub('act_desc')">-</button>
-                                <h2>descanso  {{act_desc}}</h2>
-                                <button  @click="add('act_desc')">+</button>
+                                <button @click="sub('act_desc',15)">-</button>
+                                <h2>descanso  {{a.act_desc | time}}</h2>
+                                <button @click="add('act_desc',15)">+</button>
                             </div>
                             <div id="preaviso">
-                                <button  @click="sub('act_preaviso')">-</button>
-                                <h2>preaviso {{act_preaviso_text[act_preaviso]}}</h2>
+                                <button @click="sub('act_preaviso')">-</button>
+                                <h2>preaviso {{a.act_preaviso_text[a.act_preaviso]}}</h2>
                                 <button @click="add('act_preaviso')">+</button>
                             </div>
                         </div>
-                                                <div class="screen">
-                            
-                         
-                                <button v-if="status=='round'" @click="pause()" >
-
-                                    <h1>{{status}}</h1>
-                                     <h1> {{(act_rounds-rounds+1)}}/{{act_rounds}}</h1>
-                                  <h1> {{minutos}}:{{segundos}} </h1>
-                                 <h1>II</h1>
-                                </button>
-                                <button v-if="!running" @click="go()">
-                                           <div class="info">
-                                   <div>{{act_rounds}} Rounds de</div>
-                                    <h1> {{act_time}} Minutos </h1><h1>{{act_desc}} de descanso de  </h1>
+                        <div class="screen">
+                            <button v-if="a.running" @click="pause()">
+                                <h1>{{a.status}}</h1>
+                                <h1> {{(a.act_rounds-a.rounds+1)}}/{{a.act_rounds }}</h1>
+                                <h1> {{a.minutos | time }}</h1>
+                                <h1>II</h1>
+                            </button>
+                            <button v-if="!a.running" @click="go()">
+                                <div class="info">
+                                    <div>{{a.act_rounds}} Rounds de</div>
+                                    <h1>Asalto {{a.act_time | time}}  </h1><h1>Descanso {{a.act_desc | time}}     </h1>
                                 </div>
-                             <h1>GO</h1>
-                                </button>
-                       
+                                <h1>GO</h1>
+                            </button>
                         </div>
                     </div>
                     <div id="panel_config" class="panel">
                         <div class="botonera">
                             <div>
-                                 <button @click="sub('act_idioma')">-</button>
-                                <h2>Idioma: {{act_idioma_text[act_idioma]}} </h2>
+                                <button @click="sub('act_idioma')">-</button>
+                                <h2>Idioma: {{a.act_idioma_text[a.act_idioma]}} </h2>
                                 <button @click="add('act_idioma')">+</button>
                             </div>
                             <div>
                                 <button @click="sub('act_theme')">-</button>
-                                <h2>plantilla {{act_theme_text[act_theme]}}</h2>
+                                <h2>plantilla {{a.act_theme_text[a.act_theme]}}</h2>
                                 <button @click="add('act_theme')">+</button>
                             </div>
                         </div>
@@ -91,43 +87,40 @@
                         <div class="botonera">
                             <div>
                                 <button @click="sub('sonido_asaltos')">-</button>
-                                <h2>Asalto: {{act_sonidos_text[sonido_asaltos]}}</h2>
+                                <h2>Asalto: {{a.act_sonidos_text[a.sonido_asaltos]}}</h2>
                                 <button @click="add('sonido_asaltos')">+</button>
                             </div>
                             <div>
-                               <button @click="sub('sonido_descanso')">-</button>
-                                <h2>Descanso {{act_sonidos_text[sonido_descanso]}}</h2>
+                                <button @click="sub('sonido_descanso')">-</button>
+                                <h2>Descanso {{a.act_sonidos_text[a.sonido_descanso]}}</h2>
                                 <button @click="add('sonido_descanso')">+</button>
                             </div>
                             <div>
                                 <button @click="sub('sonido_fin')">-</button>
-                                <h2>Fin combate {{act_sonidos_text[sonido_fin]}}</h2>
+                                <h2>Fin combate {{a.act_sonidos_text[a.sonido_fin]}}</h2>
                                 <button @click="add('sonido_fin')">+</button>
                             </div>
                             <div>
                                 <button @click="sub('sonido_preaviso')">-</button>
-                                <h2>preaviso  {{act_sonidos_text[sonido_preaviso]}}</h2>
-                                 <button @click="add('sonido_preaviso')">+</button>
+                                <h2>preaviso  {{a.act_sonidos_text[a.sonido_preaviso]}}</h2>
+                                <button @click="add('sonido_preaviso')">+</button>
                             </div>
                         </div>
                     </div>
                     <div id="panel_sesiones" class="panel">
-                         <button @click="addSesion()">Añadir sesion</button>
-                        <div class="modal">
-                            <div>Nombre de la sesion</div><input v-model="sesionName" type="text" ref="title" defaultValue="">
-                        </div>
+                        <button @click="addSesion">Añadir sesion</button>
                         <div class="botonera">
-                            <div v-for="item in sesiones">
-                                <button @click="setSesion(item)" class="text"> {{ item.nombre }}  {{ item.rounds }} -{{ item.time }} -{{ item.desc }}- {{ item.preaviso }}</button>
-                               
-                                <button @click="deleteSesion(item)">x</button>
+                            <div v-for="item in a.sesiones" v-bind:key="item">
+                                <button @click="setSesion(item)" class="text"> {{ item.nombre }} {{ item.rounds }} -{{ item.time  | time}} -{{ item.desc | time }}- {{ a.act_preaviso_text[item.preaviso] }}</button>
+                                <button @click="deleteSesion($event,item)">x</button>
                             </div>
                         </div>
-                        <div class="status">   <div class="info">
-                                   <h2>Rounds :{{act_rounds}}</h2>
-                                    <h1>Minutos {{segundos}} - {{act_time}}</h1>
-                                </div></div>
-                       
+                        <div class="status">
+                            <div class="info">
+                                <h2>Rounds :{{a.act_rounds}}</h2>
+                                <h1>Minutos {{a.segundos}} - {{a.act_time}}</h1>
+                            </div>
+                        </div>
                     </div>
                     <div id="panel_trainer" class="panel">
                         <div class="botonera">
@@ -138,11 +131,11 @@
                     </div>
                 </div>
                 <div class="nav ">
-                   <button  @click="sts_panel = 0" > Principal</button>
-                   <button  @click="sts_panel = 1" >Configuracion</button>
-                    <button  @click="sts_panel = 2" >Sonido</button>
-                    <button  @click="sts_panel = 3" >Sesiones</button>
-                    <button  @click="sts_panel = 4" > Trainer</button>
+                    <button v-if="a.sts_panel>0" @click="a.sts_panel = 0" class="back"> Principal</button>
+                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 1"></button>
+                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 2"></button>
+                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 3"></button>
+                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 4"> </button>
                 </div>
             </div>
         </body>
