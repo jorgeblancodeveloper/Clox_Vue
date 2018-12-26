@@ -53,7 +53,7 @@ var vm = new Vue({
             rounds: 0,
             segundos: 60,
             minutos: 2,
-            running: false,
+            running: 0,
             sts_panel: 0,
             status: "main",
             fontSize: 5,
@@ -104,15 +104,14 @@ var vm = new Vue({
             localStorage.backup = this.a.backup;
         },
         pause: function() {
-            this.a.running = false;
+            this.a.running = 2;
             clearInterval(this.a.crono);
             this.a.segundos = 60;
-            console.log(this.a.running)
         },
         go: function() {
             console.log(this.a.running)
             const myself = this.a;
-            this.a.running = true;
+
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
             asalto();
@@ -120,6 +119,8 @@ var vm = new Vue({
             function asalto() {
                 myself.crono = setInterval(
                     function() {
+                                  myself.running = 1;
+                         myself.status = "Box!";
                         myself.minutos--;
                         if (myself.minutos == 0) {
                             clearInterval(myself.crono);
@@ -128,12 +129,14 @@ var vm = new Vue({
                                 myself.minutos = myself.act_desc;
                                 descanso();
                             } else {
-                                myself.status = "fin";
+                                myself.status = "Fin";
+                                myself.running = 3;
                             }
                         }
 
                         function descanso() {
-                            myself.status = "descanso";
+                            myself.status = "Descanso";
+                            myself.running = 2;
                             myself.descrono = setInterval(
                                 function() {
                                     myself.minutos--;
@@ -141,11 +144,12 @@ var vm = new Vue({
                                         clearInterval(myself.descrono);
 
                                         if (myself.rounds > 0) {
-                                            myself.status = "round";
+                                            myself.status = "Box!";
                                             myself.minutos = myself.act_time;
                                             asalto();
                                         } else {
                                             console.log("finito");
+                                          //      myself.running = 0;
                                         }
                                     }
 

@@ -27,7 +27,7 @@
     <div id="app">
 
         <body class="home">
-            <div id="wrap" v-bind:class="{ active: a.running }">
+            <div id="wrap" v-bind:class="'state'+a.running">
                 <mimodal v-if="a.sesiontitle!=''" :msj="a.sesiontitle" v-on:recibido='close'></mimodal>
                 <div id="main" v-bind:style="{ transform:  'translatex(calc(-20 * '+a.sts_panel+'%)' }">
                     <div id="panel_main" class="panel">
@@ -62,8 +62,8 @@
                             </button>
                             <button v-if="!a.running" @click="go()">
                                 <div class="info">
-                                    <div>{{a.act_rounds}} Rounds de</div>
-                                    <h1>Asalto {{a.act_time | time}}  </h1><h1>Descanso {{a.act_desc | time}}     </h1>
+                                    <h3>{{a.act_rounds}} Rounds de
+                                    {{a.act_time | time}} sDescanso {{a.act_desc | time}}     </h3>
                                 </div>
                                 <h1>GO</h1>
                             </button>
