@@ -81,7 +81,14 @@ var vm = new Vue({
             ],
         }
     },
-
+computed: {
+  activa: function () {
+    return {
+      active: this.isActive && !this.error,
+      'text-danger': this.error && this.error.type === 'fatal'
+    }
+  }
+},
     created() {
         console.log(this.a.running)
      /*   window.addEventListener('beforeunload', autosave());
@@ -120,7 +127,6 @@ var vm = new Vue({
                 myself.crono = setInterval(
                     function() {
                                   myself.running = 1;
-                         myself.status = "Box!";
                         myself.minutos--;
                         if (myself.minutos == 0) {
                             clearInterval(myself.crono);
@@ -129,13 +135,11 @@ var vm = new Vue({
                                 myself.minutos = myself.act_desc;
                                 descanso();
                             } else {
-                                myself.status = "Fin";
                                 myself.running = 3;
                             }
                         }
 
                         function descanso() {
-                            myself.status = "Descanso";
                             myself.running = 2;
                             myself.descrono = setInterval(
                                 function() {
@@ -144,7 +148,6 @@ var vm = new Vue({
                                         clearInterval(myself.descrono);
 
                                         if (myself.rounds > 0) {
-                                            myself.status = "Box!";
                                             myself.minutos = myself.act_time;
                                             asalto();
                                         } else {
