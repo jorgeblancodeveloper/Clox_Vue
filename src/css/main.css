@@ -36,7 +36,10 @@ body {
         font-size: 28px;
     }
 }
-
+h1,h2,h3{
+  margin:0;
+  padding:0;
+}
 h1 {
     font-size: 3em;
 }
@@ -99,7 +102,7 @@ input[type="radio"] {
     height: calc(100% - 50px);
     width: 100%;
     flex-direction: column-reverse;
-    transform-origin: 50% 0 -50vw;
+    transform-origin: 50% 0 -0vw;
     backface-visibility: hidden;
 }
 
@@ -118,7 +121,7 @@ input[type="radio"] {
 }
 
 #panel_sesiones .botonera>div {
-    animation: pop 0.5s 1;
+    animation: pop 0.8s 1;
 }
 
 button {
@@ -240,9 +243,13 @@ button {
 }
 
 #panel_main .botonera {
-    height: 50vh;
+    height: 0vh;
+    transition: height 0.3s ease-in-out;
 }
-
+.none #panel_main .botonera {
+    height: 50vh;
+    flex:0
+}
 .state1#wrap {
     background: green;
 }
@@ -262,18 +269,18 @@ button {
 }
 
 .fade-leave-active {
-    animation: exit3d 10.5s 1;
+    animation: exit3d 0.5s 1;
 }
 
 .fade-enter-active {
 
-    animation: enter3d 10.5s 1;
+    animation: enter3d 0.5s 1;
 }
 
 
 @keyframes enter3d {
     from {
-        transform: rotatey(90deg);
+        transform: rotatey(180deg);
     }
 
     to {
@@ -286,7 +293,7 @@ button {
         transform: rotatey(0);
     }
     to {
-        transform: rotatey(-90deg);
+        transform: rotatey(-180deg);
     }
 }
 
@@ -300,4 +307,8 @@ button {
         min-height: 0px;
         height: 60px
     }
+}
+
+.kill{
+  
 }

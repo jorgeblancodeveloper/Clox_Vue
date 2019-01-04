@@ -46,6 +46,7 @@ var vm = new Vue({
             sonido_fin: 3,
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
+            running_text: ["none", "box", "rest", "pause"],
             act_theme: 1,
             sesiontitle: "",
             sesionName: "Nombre sesion",
@@ -111,14 +112,58 @@ computed: {
             localStorage.backup = this.a.backup;
         },
         pause: function() {
-            this.a.running = 2;
+            this.a.running = 3;
             clearInterval(this.a.crono);
-            this.a.segundos = 60;
+
+        },
+        resume: function(){
+
+             const myself = this.a;
+                 function asalto() {
+     myself.crono = setInterval(
+                    function() {
+                                  myself.running = 1;
+                        myself.minutos--;
+                        if (myself.minutos == 0) {
+                            clearInterval(myself.crono);
+                            if (myself.rounds > 1) {
+                                myself.rounds--;
+                                myself.minutos = myself.act_desc;
+                                descanso();
+                            } else {
+                                myself.running = 3;
+                            }
+                        }
+
+                        function descanso() {
+                            myself.running = 2;
+                            myself.descrono = setInterval(
+                                function() {
+                                    myself.minutos--;
+                                    if (myself.minutos < 0) {
+                                        clearInterval(myself.descrono);
+
+                                        if (myself.rounds > 0) {
+                                            myself.minutos = myself.act_time;
+                                            asalto();
+                                        } else {
+                                            console.log("finito");
+                                          //      myself.running = 0;
+                                        }
+                                    }
+
+                                }, 50);
+                        }
+                    }, 50);
+ }
+        },
+        kill: function() {
+            this.a.running = 0;
+            clearInterval(this.a.crono);
+
         },
         go: function() {
-            console.log(this.a.running)
             const myself = this.a;
-
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
             asalto();
