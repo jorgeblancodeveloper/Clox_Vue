@@ -4,7 +4,7 @@ Vue.filter('time', function(value) {
     let seconds = parseInt((value - ((minutes * 60))) % 60);
 
 
-    let dMins = (minutes > 9 ? minutes : '0' + minutes);
+    let dMins = minutes;
     let dSecs = (seconds > 9 ? seconds : '0' + seconds);
 
     return dMins + ":" + dSecs;
@@ -46,6 +46,7 @@ var vm = new Vue({
             sonido_fin: 3,
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
+            running_text: ["none", "box", "rest", "pause", "end"],
             act_theme: 1,
             sesiontitle: "",
             sesionName: "Nombre sesion",
@@ -81,8 +82,26 @@ var vm = new Vue({
             ],
         }
     },
+computed: {
+  activa: function () {
+    return  "ghg1"
+  }
+},
+created: function () {
+    var myself=this;
+    window.addEventListener('beforeunload', function (event) {
+      
+        myself.saveall();
+        console.log("guardado");
+    }, false);
+        if (localStorage.backup) {
+            console.log("cargoa");
+            this.a = JSON.parse(localStorage.backup);
+           // this.a.sesiontitle= "";
+        }
 
-    created() {
+  },
+    /*created() {
         console.log(this.a.running)
      /*   window.addEventListener('beforeunload', autosave());
         if (localStorage.backup) {
@@ -94,8 +113,8 @@ var vm = new Vue({
         function autosave() {
             console.log("mevoy");
             // my.saveall()
-        }*/
-    },
+        }
+    },*/
     methods: {
         saveall: function() {
             this.a.backup = JSON.stringify(this.a);
@@ -104,38 +123,49 @@ var vm = new Vue({
             localStorage.backup = this.a.backup;
         },
         pause: function() {
-            this.a.running = 2;
+            if (this.a.running == 3){
+         this.go();
+        } else {
+                        this.a.running = 3;
             clearInterval(this.a.crono);
-            this.a.segundos = 60;
-        },
-        go: function() {
-            console.log(this.a.running)
-            const myself = this.a;
+        }
 
+        },
+        resume: function(){
+
+         this.go();
+        },
+        kill: function() {
+            this.a.running = 0;
+            clearInterval(this.a.crono);
+
+        },
+        start:function(){
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
-            asalto();
+                this.go();
+        },
+        go: function() {
+            const myself = this.a;
             this.a.saveall;
+            asalto();
             function asalto() {
                 myself.crono = setInterval(
                     function() {
                                   myself.running = 1;
-                         myself.status = "Box!";
                         myself.minutos--;
                         if (myself.minutos == 0) {
                             clearInterval(myself.crono);
                             if (myself.rounds > 1) {
-                                myself.rounds--;
+                                
                                 myself.minutos = myself.act_desc;
                                 descanso();
                             } else {
-                                myself.status = "Fin";
-                                myself.running = 3;
+                                myself.running = 4;
                             }
                         }
 
                         function descanso() {
-                            myself.status = "Descanso";
                             myself.running = 2;
                             myself.descrono = setInterval(
                                 function() {
@@ -144,8 +174,8 @@ var vm = new Vue({
                                         clearInterval(myself.descrono);
 
                                         if (myself.rounds > 0) {
-                                            myself.status = "Box!";
                                             myself.minutos = myself.act_time;
+                                            myself.rounds--;
                                             asalto();
                                         } else {
                                             console.log("finito");
