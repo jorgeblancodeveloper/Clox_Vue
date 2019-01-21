@@ -4,7 +4,7 @@ Vue.filter('time', function(value) {
     let seconds = parseInt((value - ((minutes * 60))) % 60);
 
 
-    let dMins = (minutes > 9 ? minutes : '0' + minutes);
+    let dMins = minutes;
     let dSecs = (seconds > 9 ? seconds : '0' + seconds);
 
     return dMins + ":" + dSecs;
@@ -46,7 +46,7 @@ var vm = new Vue({
             sonido_fin: 3,
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
-            running_text: ["none", "box", "rest", "pause"],
+            running_text: ["none", "box", "rest", "pause", "end"],
             act_theme: 1,
             sesiontitle: "",
             sesionName: "Nombre sesion",
@@ -84,13 +84,24 @@ var vm = new Vue({
     },
 computed: {
   activa: function () {
-    return {
-      active: this.isActive && !this.error,
-      'text-danger': this.error && this.error.type === 'fatal'
-    }
+    return  "ghg1"
   }
 },
-    created() {
+created: function () {
+    var myself=this;
+    window.addEventListener('beforeunload', function (event) {
+      
+        myself.saveall();
+        console.log("guardado");
+    }, false);
+        if (localStorage.backup) {
+            console.log("cargoa");
+            this.a = JSON.parse(localStorage.backup);
+           // this.a.sesiontitle= "";
+        }
+
+  },
+    /*created() {
         console.log(this.a.running)
      /*   window.addEventListener('beforeunload', autosave());
         if (localStorage.backup) {
@@ -102,8 +113,8 @@ computed: {
         function autosave() {
             console.log("mevoy");
             // my.saveall()
-        }*/
-    },
+        }
+    },*/
     methods: {
         saveall: function() {
             this.a.backup = JSON.stringify(this.a);
@@ -112,62 +123,32 @@ computed: {
             localStorage.backup = this.a.backup;
         },
         pause: function() {
-            this.a.running = 3;
+            if (this.a.running == 3){
+         this.go();
+        } else {
+                        this.a.running = 3;
             clearInterval(this.a.crono);
+        }
 
         },
         resume: function(){
 
-             const myself = this.a;
-                 function asalto() {
-     myself.crono = setInterval(
-                    function() {
-                                  myself.running = 1;
-                        myself.minutos--;
-                        if (myself.minutos == 0) {
-                            clearInterval(myself.crono);
-                            if (myself.rounds > 1) {
-                                myself.rounds--;
-                                myself.minutos = myself.act_desc;
-                                descanso();
-                            } else {
-                                myself.running = 3;
-                            }
-                        }
-
-                        function descanso() {
-                            myself.running = 2;
-                            myself.descrono = setInterval(
-                                function() {
-                                    myself.minutos--;
-                                    if (myself.minutos < 0) {
-                                        clearInterval(myself.descrono);
-
-                                        if (myself.rounds > 0) {
-                                            myself.minutos = myself.act_time;
-                                            asalto();
-                                        } else {
-                                            console.log("finito");
-                                          //      myself.running = 0;
-                                        }
-                                    }
-
-                                }, 50);
-                        }
-                    }, 50);
- }
+         this.go();
         },
         kill: function() {
             this.a.running = 0;
             clearInterval(this.a.crono);
 
         },
-        go: function() {
-            const myself = this.a;
+        start:function(){
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
-            asalto();
+                this.go();
+        },
+        go: function() {
+            const myself = this.a;
             this.a.saveall;
+            asalto();
             function asalto() {
                 myself.crono = setInterval(
                     function() {
@@ -176,11 +157,11 @@ computed: {
                         if (myself.minutos == 0) {
                             clearInterval(myself.crono);
                             if (myself.rounds > 1) {
-                                myself.rounds--;
+                                
                                 myself.minutos = myself.act_desc;
                                 descanso();
                             } else {
-                                myself.running = 3;
+                                myself.running = 4;
                             }
                         }
 
@@ -194,6 +175,7 @@ computed: {
 
                                         if (myself.rounds > 0) {
                                             myself.minutos = myself.act_time;
+                                            myself.rounds--;
                                             asalto();
                                         } else {
                                             console.log("finito");

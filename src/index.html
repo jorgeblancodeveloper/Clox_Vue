@@ -6,7 +6,8 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title></title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,7 @@
                 <div id="main">
                     <transition name="fade">
                         <div v-if="a.sts_panel==0" id="panel_main" class="panel" key="save1">
-                            <div class="botonera">
+                            <div class="botonera"  v-if="a.running==0">
                                 <div id="asaltos">
                                     <button @click="sub('act_rounds')">-</button>
                                     <h2>Asaltos  {{a.act_rounds}}</h2>
@@ -49,19 +50,19 @@
                                 </div>
                             </div>
                             <div class="screen">
+                                
                                 <button v-if="a.running==3" @click="kill()" class="kill">
                                     acabar
                                 </button>
-                                 <button v-if="a.running==3" @click="resume()">
-                                <h1>continuar</h1>
-                            </button>
+                          
                                 <button v-if="a.running" @click="pause()">
                                     <h1> {{(a.act_rounds-a.rounds+1)}}/{{a.act_rounds }}</h1>
                                     <h1> {{a.minutos | time }}</h1>
-                                    <h1 v-if="a.running">pausa</h1>
-                                    
+                                    <h1 v-if="a.running==1">pausa</h1>
+                                     <h1  v-if="a.running==3">continuar</h1>
+                                     <h1   v-if="a.running==4" > FIN </h1>
                                 </button>
-                                <button v-if="!a.running" @click="go()">
+                                <button v-if="!a.running" @click="start()">
                                     <div class="info">
                                         <h3>{{a.act_rounds}} Rounds de
                                     {{a.act_time | time}} sDescanso {{a.act_desc | time}}     </h3>
@@ -111,8 +112,8 @@
                         <div v-if="a.sts_panel==3" id="panel_sesiones" class="panel" key="save4">
                             <button @click="addSesion">Añadir sesion</button>
                             <div class="botonera">
-                                <div v-for="item in a.sesiones" v-bind:key="item">
-                                    <button @click="setSesion(item)" class="text" v-bind:class="activa"> {{ item.nombre }} {{ item.rounds }} -{{ item.time | time}} -{{ item.desc | time }}- {{ a.act_preaviso_text[item.preaviso] }}</button>
+                                <div v-for="item in a.sesiones" v-bind:key="item" v-bind:class="{ activa: ((item.rounds==a.act_rounds) && (item.time==a.act_time) && (item.desc==a.act_desc))}">
+                                    <button @click="setSesion(item)" class="text" ><p> {{ item.nombre }}</p> {{ item.rounds }} -{{ item.time | time}} -{{ item.desc | time }}- {{ a.act_preaviso_text[item.preaviso] }}</button>
                                     <button @click="deleteSesion($event,item)">x</button>
                                 </div>
                             </div>
@@ -130,7 +131,7 @@
                         </div>
                     </transition>
                 </div>
-                <div class="nav ">
+                <div class="nav " v-if="!a.running">
                     <button v-if="a.sts_panel>0" @click="a.sts_panel = 0" class="back"> Principal</button>
                     <button v-if="a.sts_panel==0" @click="a.sts_panel = 1"></button>
                     <button v-if="a.sts_panel==0" @click="a.sts_panel = 2"></button>
