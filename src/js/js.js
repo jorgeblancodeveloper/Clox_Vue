@@ -1,29 +1,24 @@
 Vue.filter('time', function(value) {
-
     let minutes = parseInt(Math.floor((value) / 60));
     let seconds = parseInt((value - ((minutes * 60))) % 60);
-
-
     let dMins = minutes;
     let dSecs = (seconds > 9 ? seconds : '0' + seconds);
-
     return dMins + ":" + dSecs;
 });
 
 Vue.component('mimodal', {
-    data: function () {
-  return {
-    mitexto: "namesesion"
-  }
-},
-  props: ['msj'],
+    data: function() {
+        return {
+            mitexto: "namesesion"
+        }
+    },
+    props: ['msj'],
     template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="close()">Confirmar</button> </div></div></main></div>',
-     methods: {
-    close: function () {
-        this.$emit('recibido',this.mitexto)
-      this.$parent.closemodal();
+    methods: {
+        close: function() {
+            this.$emit('recibido', this.mitexto)
+        }
     }
-  }
 })
 
 
@@ -31,7 +26,6 @@ var vm = new Vue({
     el: '#app',
     data: {
         a: {
-            misdata:"",
             backup: "",
             act_time: 240,
             act_rounds: 4,
@@ -39,18 +33,21 @@ var vm = new Vue({
             act_preaviso: 1,
             act_preaviso_text: ["asalto", "descanso", "asalto y descanso", "nada"],
             act_idioma_text: ["Español", "Catalan", "ingles"],
+            panel_text: ["", "Opciones", "Sonidos", "Sesiones", "Trainer", "Combate"],
             act_sonidos_text: ["sirena", "campana", "dong", "buzzer", "slap", "timbre"],
             sonido_asaltos: 1,
             sonido_descanso: 0,
             sonido_preaviso: 2,
             sonido_fin: 3,
+            click: "mp3/click.mp3",
+            fail: "mp3/fail.mp3",
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
-            running_text: ["none", "box", "rest", "pause", "end"],
+            running_text: ["", "BOX", "REST", "PAUSE", "end", "FIN"],
+                        sonidos_mp3: ["mp3/sirena.mp3", "mp3/campana.mp3", "mp3/dong.mp3", "mp3/buzzer.mp3", "mp3/slap.mp3", "mp3/timbre.mp3"],
             act_theme: 1,
             sesiontitle: "",
             sesionName: "Nombre sesion",
-            txtmodal: "jkl",
             rounds: 0,
             segundos: 60,
             minutos: 2,
@@ -58,115 +55,125 @@ var vm = new Vue({
             sts_panel: 0,
             status: "main",
             fontSize: 5,
+            endesc: 0,
+
             sesiones: [{
                     nombre: "combate",
                     rounds: 1,
-                    time: 3,
+                    time: 240,
                     desc: 60,
                     preaviso: 0
                 },
                 {
                     nombre: "calentamiento",
                     rounds: 2,
-                    time: 2,
+                    time: 180,
                     desc: 60,
                     preaviso: 0
                 },
                 {
                     nombre: "entrenamiento",
                     rounds: 3,
-                    time: 1,
+                    time: 180,
                     desc: 60,
                     preaviso: 0
                 }
             ],
         }
     },
-computed: {
-  activa: function () {
-    return  "ghg1"
-  }
-},
-created: function () {
-    var myself=this;
-    window.addEventListener('beforeunload', function (event) {
-      
-        myself.saveall();
-        console.log("guardado");
-    }, false);
-        if (localStorage.backup) {
-            console.log("cargoa");
-            this.a = JSON.parse(localStorage.backup);
-           // this.a.sesiontitle= "";
-        }
 
-  },
-    /*created() {
-        console.log(this.a.running)
-     /*   window.addEventListener('beforeunload', autosave());
+    created: function() {
+        console.log(this.a.sonidos_mp3[2]);
+        var myself = this;
+        window.addEventListener('beforeunload', function(event) {
+            //myself.saveall();
+        }, false);
         if (localStorage.backup) {
-            console.log("cargoa");
-            this.a = JSON.parse(localStorage.backup);
-           // this.a.sesiontitle= "";
+           // this.a = JSON.parse(localStorage.backup);
         }
-        var my = this
-        function autosave() {
-            console.log("mevoy");
-            // my.saveall()
-        }
-    },*/
+    },
+
     methods: {
         saveall: function() {
+            this.a.running = 0;
+            this.a.sts_panel = 0;
+            this.a.status = "main";
             this.a.backup = JSON.stringify(this.a);
-            console.log(this.a.backup);
-            console.log("guarddo");
             localStorage.backup = this.a.backup;
         },
-        pause: function() {
-            if (this.a.running == 3){
-         this.go();
-        } else {
-                        this.a.running = 3;
-            clearInterval(this.a.crono);
-        }
-
+        playSound(sound) {
+            if (sound) {
+                var audio = new Audio(sound);
+                audio.play();
+            }
         },
-        resume: function(){
+        pause: function(desc) {
+            if (this.a.running == 3) {
+                this.go(this.a.endesc);
+            } else if (this.a.running == 1) {
+                this.a.running = 3;
+                console.log(this.a.crono);
+                clearInterval(this.a.crono);
+            } else if (this.a.running == 2) {
+                this.a.running = 3;
+                this.a.endesc = 1;
+                clearInterval(this.a.descrono);
 
-         this.go();
+            } else if (this.a.running == 4) {
+                this.a.running = 3;
+                clearInterval(this.a.crono);
+            }
+        },
+        resume: function() {
+            this.go();
         },
         kill: function() {
             this.a.running = 0;
             clearInterval(this.a.crono);
-
         },
-        start:function(){
+        start: function() {
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
-                this.go();
+            this.go();
         },
-        go: function() {
+        back: function(){
+            if (this.a.sts_panel < 5){
+                this.a.sts_panel = 0;
+            } else {
+                this.kill();
+                this.a.sts_panel = 0;
+            }
+        },
+        go: function(desc) {
+            this.a.sts_panel=5;
             const myself = this.a;
-            this.a.saveall;
+            const my = this;
+            console.log(myself);
+            this.playSound(this.a.sonidos_mp3[myself.sonido_asaltos]);
             asalto();
+
             function asalto() {
+                //if (desc){ descanso();this.a.endesc=0}
+                
                 myself.crono = setInterval(
                     function() {
-                                  myself.running = 1;
+
+                        myself.running = 1;
                         myself.minutos--;
                         if (myself.minutos == 0) {
                             clearInterval(myself.crono);
                             if (myself.rounds > 1) {
-                                
                                 myself.minutos = myself.act_desc;
                                 descanso();
                             } else {
-                                myself.running = 4;
+                                myself.running = 5;
                             }
                         }
 
                         function descanso() {
+                        my.playSound(myself.sonidos_mp3[myself.sonido_descanso]);
                             myself.running = 2;
+                            console.log(myself.running);
                             myself.descrono = setInterval(
                                 function() {
                                     myself.minutos--;
@@ -178,8 +185,7 @@ created: function () {
                                             myself.rounds--;
                                             asalto();
                                         } else {
-                                            console.log("finito");
-                                          //      myself.running = 0;
+                                             my.playSound(myself.sonidos_mp3[myself.sonido_fin]);
                                         }
                                     }
 
@@ -190,11 +196,8 @@ created: function () {
 
 
         },
-        closemodal: function(){
-             console.log("cierro");
-        },
         add: function(variable, valor) {
-      
+            this.playSound(this.a.click);
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] > this.a[variable + "_text"].length) {
@@ -202,11 +205,9 @@ created: function () {
                     return
                 }
             }
-                    console.log( this.a[variable]);
             this.a[variable] += valor * 1;
         },
         sub: function(variable, valor) {
-              console.log("cierro");
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] == 0) {
@@ -216,8 +217,6 @@ created: function () {
             }
             this.a[variable] -= (1 * valor) * (this.a[variable] > 0);
         },
-        setPanel(sesion) {},
-
         setSesion(sesion) {
             this.a.act_rounds = sesion.rounds;
             this.a.act_time = sesion.time;
@@ -226,8 +225,6 @@ created: function () {
 
         },
         deleteSesion(event, item) {
-    //this.a.sesiontitle="dsff";
-            console.log(console.log(event.target.parentElement));
             event.target.parentElement.className += " delete";
             const todoIndex = this.a.sesiones.indexOf(item);
             var missesiones = this.a.sesiones;
@@ -236,8 +233,7 @@ created: function () {
             }, 800);
         },
         close(datos) {
-            console.log("llego" +datos);
-                                  var newitem = {
+            var newitem = {
                 nombre: datos,
                 rounds: this.a.act_rounds,
                 time: this.a.act_time,
@@ -245,12 +241,10 @@ created: function () {
                 preaviso: this.a.act_preaviso
             }
             this.a.sesiones.push(newitem);
-                        this.a.sesiontitle="";
+            this.a.sesiontitle = "";
         },
         addSesion() {
-console.log("pinffn");
-            this.a.sesiontitle="Nombre de la sesion?";
-
+            this.a.sesiontitle = "Nombre de la sesion?";
         }
     }
 })
