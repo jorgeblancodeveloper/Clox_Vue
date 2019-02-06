@@ -13,9 +13,9 @@ Vue.component('mimodal', {
         }
     },
     props: ['msj'],
-    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="close()">Confirmar</button> </div></div></main></div>',
+    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="send()">Confirmar</button> </div></div></main></div>',
     methods: {
-        close: function() {
+        send: function() {
             this.$emit('recibido', this.mitexto)
         }
     }
@@ -86,14 +86,17 @@ var vm = new Vue({
         console.log(this.a.sonidos_mp3[2]);
         var myself = this;
         window.addEventListener('beforeunload', function(event) {
-            //myself.saveall();
+            myself.saveall();
         }, false);
         if (localStorage.backup) {
-           // this.a = JSON.parse(localStorage.backup);
+            this.a = JSON.parse(localStorage.backup);
         }
     },
 
     methods: {
+                reset: function() {
+          localStorage.clear()
+        },
         saveall: function() {
             this.a.running = 0;
             this.a.sts_panel = 0;
@@ -189,9 +192,9 @@ var vm = new Vue({
                                         }
                                     }
 
-                                }, 50);
+                                }, 1000);
                         }
-                    }, 50);
+                    }, 1000);
             }
 
 

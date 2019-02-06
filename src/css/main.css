@@ -55,7 +55,7 @@ h1.root{
 }
 
 h2 {
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 input {
@@ -79,7 +79,6 @@ input[type="radio"] {
     width: 100%;
     height: 100%;
     flex-direction: column;
-    /* overflow: hidden; */
     perspective: 400px;
 }
 
@@ -90,9 +89,10 @@ input[type="radio"] {
     height: 3em;
     position: absolute;
     right: 10px;
-    transition: all 0.3s cubic-bezier(0.63, -0.29, 0.79, 1.1);
+    transition: all 0.3s cubic-bezier(0.65, -0.18, 0.79, 1.1);
     bottom: 0px;
     width:100%;
+    overflow: hidden;
     right:0;
 }
 .sts5 + .nav,
@@ -102,9 +102,10 @@ input[type="radio"] {
 .sts3 + .nav {
     border-radius: 100px;
     overflow: hidden;
+    border-bottom-left-radius: 0;
     position: absolute;
-    height: 3em;
-    width: 3em;
+    height: 2.6em;
+    width: 2.6em;
     right: 0.7em;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
     bottom: 0.7em;
@@ -116,7 +117,6 @@ input[type="radio"] {
     width: 100%;
     position: relative;
     overflow: hidden;
-    /* background: #000; */
     align-items: flex-end;
 }
 
@@ -132,9 +132,7 @@ input[type="radio"] {
     transform-origin: 50% 0 -0vw;
     backface-visibility: hidden;
 }
-.none .panel{
-        height: calc(100% - 3em);
-}
+
 .screen {
     display: flex
 }
@@ -142,15 +140,10 @@ input[type="radio"] {
 .screen button {
     max-height: none;
 }
-.botonera{
-    /* width: 90%; */
-    /* margin: auto; */
-}
 
 .botonera>div {
     display: flex;
     min-height: 2.5em;
-    /* height: 2.5em; */
 }
 
 #panel_sesiones .botonera>div {
@@ -166,7 +159,6 @@ input[type="radio"] {
 .delete {
     height: 0;
     min-height: 0 !important;
-
     flex: 0;
     overflow: hidden;
 }
@@ -181,15 +173,10 @@ button {
     flex: 1;
     justify-content: center;
     flex-direction: column;
-    /* max-height: 10vh; */
     background: rgba(0, 0, 0, 0.2);
     border: none;
     margin: 0.5px;
-    /* box-shadow: 0 0 40px rgba(0, 0, 0, 0.15) inset;
-    /*position: relative;*/
     border-radius: 2px;
-    /* transition: all 1s; */
-    /* position: absolute; */
 }
 
 .text {
@@ -265,14 +252,17 @@ button {
     line-height: 1.3;
     transition: all 0.5s linear;
 }
-.rest .screen{
+.REST .screen{
     background: #e71166;
 }
-.box .screen{
+.BOX .screen{
     background: #11e711;
 }
-.pause .screen{
+.PAUSE .screen{
     background: #7d915c;
+}
+.FIN  .screen{
+  background:#000
 }
 #wrap,
 .panel,
@@ -280,52 +270,20 @@ button {
     background: #928cff;
 }
 
-.status {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 10px;
-}
-
-.info {
-    /*position: absolute;
-    top: 1em;
-    left: 0;*/
-    font-size: 0.8em;
-    width: 100%;
-    top: 0;
-    padding: 0.3em;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-
 #panel_main .botonera {
     height: 0vh;
-    height: 50vh;
+    height: auto;
     transition: height 0.3s ease-in-out;
 }
 .none #panel_main .botonera {
     height: 50vh;
     flex:0;
 }
-.state1#wrap {
-    background: green;
-}
 
-.state2#wrap {
-    background: red;
-}
-
-.state3#wrap {
-    background: #000;
-}
 
 .fade-enter-active,
 .fade-leave-active {
     position: absolute;
-
 }
 
 .fade-leave-active {
@@ -333,7 +291,6 @@ button {
 }
 
 .fade-enter-active {
-
     animation: enter3d 0.5s 1;
 }
 
@@ -395,26 +352,13 @@ button {
   position:absolute;
   bottom:0;
   width: 100%;
-  /* padding: 0.3em; */
-  /* font-size: 1.3em; */
   height: 3em;
   z-index: -1;
   display: flex;
 }
-.sts0 ~ .rot_info h1{
-  transform:translatey(3em)
-}
-.rot_info h1:empty{
-  display:none;
 
-  }
 .rot_info h1{
-       transition:transform 1s linear;
-       animation-delay: 1s;
        font-size: 1.8em;
-       /* overflow: hidden;*/
-       transform:translatey(0);
-       transition: min-height  0.5s ease-in-out;
        padding: 0.2em;
 }
 h1.rot {
@@ -425,8 +369,4 @@ h1.rot {
     text-align: center;
     transform: rotate(-45deg) translate(-30% , -160%);
     z-index: 99;
-}
-
-.text p {
-    /* position: absolute; */
 }

@@ -65,8 +65,8 @@ window.addEventListener('resize', () => {
                                 <button v-if="a.running" @click="pause()">
                                     <h1> {{(a.act_rounds-a.rounds+1)}}/{{a.act_rounds }}</h1>
                                     <h1> {{a.minutos | time }}</h1>
-                                    <h1 v-if="a.running==1">pausa</h1>
-                                     <h1  v-if="a.running==3">continuar</h1>
+                                    <h2 v-if="a.running==1">II</h2>
+                                     <h2  v-if="a.running==3">continuar</h2>
                                      <h1   v-if="a.running==4" > FIN </h1>
                                 </button>
                                 <button v-if="!a.running" @click="start()">
@@ -90,6 +90,9 @@ window.addEventListener('resize', () => {
                                     <h2>plantilla {{a.act_theme_text[a.act_theme]}}</h2>
                                     <button @click="add('act_theme')">+</button>
                                 </div>
+                                 <div>
+                                <button @click="reset()">Reset</button>
+                                 </div>
                             </div>
                         </div>
                         <div v-if="a.sts_panel==2" id="panel_sonido" class="panel" key="save3">
@@ -137,10 +140,10 @@ window.addEventListener('resize', () => {
                 </div>
                 <div class="nav ">
                     <button v-if="a.sts_panel>0" @click="back()" class="back">< </button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 1"></button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 2"></button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 3"></button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 4"> </button>
+                    <button   transition="bounce" v-if="a.sts_panel==0" @click="a.sts_panel = 1"></button>
+                    <button transition="bounce"  v-if="a.sts_panel==0" @click="a.sts_panel = 2"></button>
+                    <button transition="bounce"  v-if="a.sts_panel==0" @click="a.sts_panel = 3"></button>
+                    <button transition="bounce"  v-if="a.sts_panel==0" @click="a.sts_panel = 4"> </button>
                 </div>
                 <!--h1 class="activa " v-if="!a.running"-->
                             <div class="rot_info activa">        <h1>
