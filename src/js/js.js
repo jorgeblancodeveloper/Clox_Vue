@@ -9,7 +9,7 @@ Vue.filter('time', function(value) {
 Vue.component('mimodal', {
     data: function() {
         return {
-            mitexto: "namesesion"
+            mitexto: "Sesion..."
         }
     },
     props: ['msj'],
@@ -20,6 +20,7 @@ Vue.component('mimodal', {
         }
     }
 })
+
 
 
 var vm = new Vue({
@@ -44,7 +45,7 @@ var vm = new Vue({
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
             running_text: ["", "BOX", "REST", "PAUSE", "end", "FIN"],
-                        sonidos_mp3: ["mp3/sirena.mp3", "mp3/campana.mp3", "mp3/dong.mp3", "mp3/buzzer.mp3", "mp3/slap.mp3", "mp3/timbre.mp3"],
+            sonidos_mp3: ["mp3/sirena.mp3", "mp3/campana.mp3", "mp3/dong.mp3", "mp3/buzzer.mp3", "mp3/slap.mp3", "mp3/timbre.mp3"],
             act_theme: 1,
             sesiontitle: "",
             sesionName: "Nombre sesion",
@@ -53,7 +54,6 @@ var vm = new Vue({
             minutos: 2,
             running: 0,
             sts_panel: 0,
-            status: "main",
             fontSize: 5,
             endesc: 0,
 
@@ -100,7 +100,6 @@ var vm = new Vue({
         saveall: function() {
             this.a.running = 0;
             this.a.sts_panel = 0;
-            this.a.status = "main";
             this.a.backup = JSON.stringify(this.a);
             localStorage.backup = this.a.backup;
         },
