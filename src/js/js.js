@@ -12,8 +12,8 @@ Vue.component('mimodal', {
             mitexto: "Sesion..."
         }
     },
-    props: ['msj'],
-    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="send()">Confirmar</button> </div></div></main></div>',
+    props: ['msj','alert'],
+    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" v-if="alert==0" type="text" ref="title">  <div class="botonera"> <div><button @click="send()">Confirmar</button> </div></div></main></div>',
     methods: {
         send: function() {
             this.$emit('recibido', this.mitexto)
@@ -21,11 +21,10 @@ Vue.component('mimodal', {
     }
 })
 
-
-
 var vm = new Vue({
     el: '#app',
     data: {
+        reset:0,
         a: {
             backup: "",
             act_time: 240,
@@ -44,7 +43,7 @@ var vm = new Vue({
             fail: "mp3/fail.mp3",
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
-            running_text: ["", "BOX", "REST", "PAUSE", "end", "FIN"],
+            running_text: ["", "BOX", "REST", "PAUSE", "...", "FIN"],
             sonidos_mp3: ["mp3/sirena.mp3", "mp3/campana.mp3", "mp3/dong.mp3", "mp3/buzzer.mp3", "mp3/slap.mp3", "mp3/timbre.mp3"],
             act_theme: 1,
             sesiontitle: "",
@@ -54,8 +53,6 @@ var vm = new Vue({
             minutos: 2,
             running: 0,
             sts_panel: 0,
-            fontSize: 5,
-            endesc: 0,
 
             sesiones: [{
                     nombre: "combate",
@@ -83,10 +80,10 @@ var vm = new Vue({
     },
 
     created: function() {
-        console.log(this.a.sonidos_mp3[2]);
         var myself = this;
-        window.addEventListener('beforeunload', function(event) {
-            myself.saveall();
+        window.addEventListener('beforeunload', function() {
+        if (this.reset==0){
+            myself.saveall();}
         }, false);
         if (localStorage.backup) {
             this.a = JSON.parse(localStorage.backup);
@@ -94,8 +91,10 @@ var vm = new Vue({
     },
 
     methods: {
-                reset: function() {
-          localStorage.clear()
+        reset: function() {
+          localStorage.clear();
+          reset=1;
+          location.reload();
         },
         saveall: function() {
             this.a.running = 0;
@@ -111,16 +110,13 @@ var vm = new Vue({
         },
         pause: function(desc) {
             if (this.a.running == 3) {
-                this.go(this.a.endesc);
+                this.go();
             } else if (this.a.running == 1) {
                 this.a.running = 3;
-                console.log(this.a.crono);
                 clearInterval(this.a.crono);
             } else if (this.a.running == 2) {
                 this.a.running = 3;
-                this.a.endesc = 1;
                 clearInterval(this.a.descrono);
-
             } else if (this.a.running == 4) {
                 this.a.running = 3;
                 clearInterval(this.a.crono);
@@ -132,6 +128,7 @@ var vm = new Vue({
         kill: function() {
             this.a.running = 0;
             clearInterval(this.a.crono);
+            clearInterval(this.a.descrono);
         },
         start: function() {
             this.a.rounds = this.a.act_rounds;
@@ -150,50 +147,43 @@ var vm = new Vue({
             this.a.sts_panel=5;
             const myself = this.a;
             const my = this;
-            console.log(myself);
             this.playSound(this.a.sonidos_mp3[myself.sonido_asaltos]);
             asalto();
-
-            function asalto() {
-                //if (desc){ descanso();this.a.endesc=0}
-                
-                myself.crono = setInterval(
+            function asalto() {         
+                my.a.crono = setInterval(
                     function() {
-
-                        myself.running = 1;
-                        myself.minutos--;
-                        if (myself.minutos == 0) {
-                            clearInterval(myself.crono);
-                            if (myself.rounds > 1) {
-                                myself.minutos = myself.act_desc;
+                        my.a.running = 1;
+                        my.a.minutos--;
+                        if (my.a.minutos == 0) {
+                            clearInterval(my.a.crono);
+                            if (my.a.rounds > 1) {
+                                my.a.minutos = my.a.act_desc;
                                 descanso();
                             } else {
-                                myself.running = 5;
+                                my.a.running = 5;
                             }
                         }
 
                         function descanso() {
                         my.playSound(myself.sonidos_mp3[myself.sonido_descanso]);
-                            myself.running = 2;
-                            console.log(myself.running);
-                            myself.descrono = setInterval(
+                            my.a.running = 2;
+                            my.a.descrono = setInterval(
                                 function() {
-                                    myself.minutos--;
-                                    if (myself.minutos < 0) {
-                                        clearInterval(myself.descrono);
-
-                                        if (myself.rounds > 0) {
-                                            myself.minutos = myself.act_time;
-                                            myself.rounds--;
+                                    my.a.minutos--;
+                                    if (my.a.minutos < 0) {
+                                        clearInterval(my.a.descrono);
+                                        if (my.a.rounds > 0) {
+                                            my.a.minutos = my.a.act_time;
+                                            my.a.rounds--;
                                             asalto();
                                         } else {
-                                             my.playSound(myself.sonidos_mp3[myself.sonido_fin]);
+                                             my.playSound(my.a.sonidos_mp3[my.a.sonido_fin]);
                                         }
                                     }
 
-                                }, 1000);
+                                }, 100);
                         }
-                    }, 1000);
+                    }, 100);
             }
 
 
@@ -210,6 +200,7 @@ var vm = new Vue({
             this.a[variable] += valor * 1;
         },
         sub: function(variable, valor) {
+            this.playSound(this.a.click);
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] == 0) {
@@ -246,7 +237,11 @@ var vm = new Vue({
             this.a.sesiontitle = "";
         },
         addSesion() {
-            this.a.sesiontitle = "Nombre de la sesion?";
+            if ( document.querySelector(".botonera .activa")){
+            this.a.sesiontitle = "¿Nombre de la sesion?";
+        } else { 
+            this.a.sesiontitle = "vetalamierda";
+        }
         }
     }
 })
