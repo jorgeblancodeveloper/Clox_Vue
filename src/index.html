@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" media="screen" href="css/main.css">
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-    <script src="https://unpkg.com/vue@2.0.1/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--script src="https://unpkg.com/vue@2.0.1/dist/vue.js"></script-->
     <script>
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -58,10 +59,12 @@
                             </div>
 
                             <div class="screen">
+
                                 <h1 class="rot">{{a.running_text[a.running]}}</h1>
                                 <button v-if="a.running" @click="pause()">
                                     <h1> {{(a.act_rounds-a.rounds+1)}}/{{a.act_rounds }}</h1>
                                     <h1> {{a.minutos | time }}</h1>
+                                    <h1 style="color:yellow"> {{digits | time}}</h1>
                                     <h2 v-if="a.running==1">II</h2>
                                     <h2  v-if="a.running==3">continuar</h2>
                                     <h1   v-if="a.running==4" > FIN </h1>
@@ -117,8 +120,7 @@
                             <button @click="addSesion">Añadir sesion</button>
                             <div class="botonera">
                                 <div v-for="item in a.sesiones"  enter-stagger="50"
-         leave-stagger="0"
-         transition="fade" v-bind:key="item" v-bind:class="{ activa: ((item.rounds==a.act_rounds) && (item.time==a.act_time) && (item.desc==a.act_desc))}">
+         leave-stagger="0" v-bind:class="{ activa: ((item.rounds==a.act_rounds) && (item.time==a.act_time) && (item.desc==a.act_desc))}">
                                     <button @click="setSesion(item)" class="text">
                                         <p> {{ item.nombre }}</p> {{ item.rounds }} -{{ item.time | time}} -{{ item.desc | time }}- {{ a.act_preaviso_text[item.preaviso] }}
                                     </button>
