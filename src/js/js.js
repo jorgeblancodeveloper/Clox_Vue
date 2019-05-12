@@ -1,4 +1,5 @@
-Vue.filter('time', function(value) {
+
+Vue.filter('time', function (value) {
     let minutes = parseInt(Math.floor((value) / 60));
     let seconds = parseInt((value - ((minutes * 60))) % 60);
     let dMins = minutes;
@@ -6,17 +7,20 @@ Vue.filter('time', function(value) {
     return dMins + ":" + dSecs;
 });
 
+
 Vue.component('mimodal', {
-    data: function() {
+    data: function () {
         return {
-            mitexto: "Sesion..."
+            mitexto: "namesesion"
         }
     },
-    props: ['msj', 'alert'],
-    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" v-if="alert!=1" type="text" ref="title">  <div class="botonera"> <div><button @click="send()">Confirmar</button> </div></div></main></div>',
+    props: ['msj'],
+    template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="close()">Confirmar</button> </div></div></main></div>',
     methods: {
-        send: function() {
+        close: function () {
             this.$emit('recibido', this.mitexto)
+            this.$parent.closemodal();
+
         }
     }
 })
@@ -28,6 +32,7 @@ var vm = new Vue({
         second: 0,
         digits: 0,
         a: {
+            misdata: "",
             backup: "",
             stop_timer:0,
             act_time: 240,
@@ -57,12 +62,13 @@ var vm = new Vue({
             sts_panel: 0,
 
             sesiones: [{
-                    nombre: "combate",
-                    rounds: 1,
-                    time: 240,
-                    desc: 60,
-                    preaviso: 0
-                },
+                nombre: "combate",
+                rounds: 1,
+                time: 3,
+                desc: 60,
+                preaviso: 0
+            },
+
                 {
                     nombre: "calentamiento",
                     rounds: 2,
@@ -80,57 +86,48 @@ var vm = new Vue({
             ],
         }
     },
-
-    created: function() {
+    computed: {
+        activa: function () {
+            return ""
+        }
+    },
+    created: function () {
         var myself = this;
-        window.addEventListener('beforeunload', function() {
-            if (this.sts_reset == 0) {
-                myself.saveall();
-            }
+        window.addEventListener('beforeunload', function (event) {
+            myself.saveall();
+            console.log("guardado");
         }, false);
+        if (localStorage.backup) {
+            console.log("cargo");
+            this.a = JSON.parse(localStorage.backup);
+            // this.a.sesiontitle= "";
+        }
+
+    },
+    /*created() {
+        console.log(this.a.running)
+     /*   window.addEventListener('beforeunload', autosave());
+
         if (localStorage.backup) {
             this.a = JSON.parse(localStorage.backup);
         }
     },
 
     methods: {
-        reset: function() {
-            localStorage.clear();
-            sts_reset = 1;
-            location.reload();
-        },
-        saveall: function() {
-            this.a.running = 0;
-            this.a.sts_panel = 0;
+
+        saveall: function () {
+
             this.a.backup = JSON.stringify(this.a);
             localStorage.backup = this.a.backup;
         },
-        playSound(sound) {
-            if (sound) {
-                var audio = new Audio(sound);
-                audio.play();
-            }
-        },
-        pause: function() {
-            if (this.a.running == 4) {
+        pause: function () {
+            if (this.a.running == 3) {
                 this.go();
-            } else if (this.a.running == 2) {
-                this.stop_timer=1;
-                this.a.running = 4;
-                clearInterval(this.a.crono);
-            } else if (this.a.running == 3) {
-                this.a.running = 4;
-                clearInterval(this.a.descrono);
-            } else if (this.a.running == 4) {
+            } else {
                 this.a.running = 3;
                 clearInterval(this.a.crono);
             }
-        },
-        timer: function(seconds) {
-            var myself = this;
-            console.log(this.a.running);
-            myself.digits = seconds;
-            return new Promise(function(resolve, reject) {
+
 
                 myself.crono = setInterval(
                     function() {
@@ -143,71 +140,71 @@ var vm = new Vue({
                     }, 150);
             });
         },
+        resume: function () {
 
-        resume: function() {
+
             this.go();
         },
-        kill: function() {
+        kill: function () {
             this.a.running = 0;
             clearInterval(this.a.crono);
             clearInterval(this.a.descrono);
         },
-        start: function() {
+        start: function () {
+
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
             this.go();
         },
-        back: function() {
-            if (this.a.sts_panel < 5) {
-                this.a.sts_panel = 0;
-            } else {
-                this.kill();
-                this.a.sts_panel = 0;
-            }
-        },
-        go: function(desc) {
-            var myself = this;
-            this.a.running = 1;
-            start_crono();
+        go: function () {
+            const myself = this.a;
+            this.a.saveall;
+            asalto();
 
+            function asalto() {
+                myself.crono = setInterval(
+                    function () {
+                        myself.running = 1;
+                        myself.minutos--;
+                        if (myself.minutos == 0) {
+                            clearInterval(myself.crono);
+                            if (myself.rounds > 1) {
 
-            function start_crono() {
-
-                myself.timer(10)
-                    .then(function() {
-                        return new Promise(function(resolve) {
-                             myself.a.running = 2;
-                            myself.playSound(myself.a.sonidos_mp3[myself.a.sonido_asaltos]);
-                            resolve(myself.timer(myself.a.act_time))
-                        })
-                    })
-                    .then(function() {
-                        return new Promise(function(resolve) {
-                            if (myself.a.rounds > 1) {
-                                myself.playSound(myself.a.sonidos_mp3[myself.a.sonido_descanso]);
-                                myself.a.rounds--;
-                                myself.a.running = 3;
-                                resolve(myself.timer(myself.a.act_desc))
+                                myself.minutos = myself.act_desc;
+                                descanso();
                             } else {
-                                myself.a.running = 5;
-                                 resolve(myself.timer(myself.a.act_time))
-                                //reject()
+                                myself.running = 4;
                             }
-                        })
-                    })
-                    .then(function() {
-                        if (myself.a.rounds > 1) {
-                            start_crono();
                         }
-                        myself.playSound(myself.a.sonidos_mp3[myself.a.sonido_fin]);
-                        console.log("finito");
-                        myself.a.sts_panel = 5;
-                    });
+
+                        function descanso() {
+                            myself.running = 2;
+                            myself.descrono = setInterval(
+                                function () {
+                                    myself.minutos--;
+                                    if (myself.minutos < 0) {
+                                        clearInterval(myself.descrono);
+
+                                        if (myself.rounds > 0) {
+                                            myself.minutos = myself.act_time;
+                                            myself.rounds--;
+                                            asalto();
+                                        } else {
+                                            console.log("finito");
+                                            //      myself.running = 0;
+                                        }
+                                    }
+
+                                }, 1000);
+                        }
+                    }, 1000);
             }
         },
+        closemodal: function () {
+            console.log("cierro");
+        },
+        add: function (variable, valor) {
 
-        add: function(variable, valor) {
-            this.playSound(this.a.click);
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] > this.a[variable + "_text"].length) {
@@ -215,10 +212,12 @@ var vm = new Vue({
                     return
                 }
             }
+            console.log(this.a[variable]);
             this.a[variable] += valor * 1;
         },
-        sub: function(variable, valor) {
-            this.playSound(this.a.click);
+        sub: function (variable, valor) {
+            console.log("cierro");
+
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] == 0) {
@@ -228,6 +227,8 @@ var vm = new Vue({
             }
             this.a[variable] -= (1 * valor) * (this.a[variable] > 0);
         },
+        setPanel(sesion) {
+        },
         setSesion(sesion) {
             this.a.act_rounds = sesion.rounds;
             this.a.act_time = sesion.time;
@@ -236,14 +237,17 @@ var vm = new Vue({
 
         },
         deleteSesion(event, item) {
+            //this.a.sesiontitle="dsff";
+            console.log(console.log(event.target.parentElement));
             event.target.parentElement.className += " delete";
             const todoIndex = this.a.sesiones.indexOf(item);
             var missesiones = this.a.sesiones;
-            setTimeout(function() {
+            setTimeout(function () {
                 missesiones.splice(todoIndex, 1);
             }, 800);
         },
         close(datos) {
+            console.log("llego" + datos);
             var newitem = {
                 nombre: datos,
                 rounds: this.a.act_rounds,
@@ -255,9 +259,8 @@ var vm = new Vue({
             this.a.sesiontitle = "";
         },
         addSesion() {
-            if (document.querySelector(".botonera .activa")) {
-                this.a.modal = 1;
-                this.a.sesiontitle = "Ya hay una sesión con esta configuración";
+            console.log("pinffn");
+            this.a.sesiontitle = "Nombre de la sesion?";
 
             } else {
                 this.a.sesiontitle = "¿Nombre de la sesion?";
