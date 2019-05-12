@@ -1,29 +1,26 @@
-Vue.filter('time', function(value) {
-
+Vue.filter('time', function (value) {
     let minutes = parseInt(Math.floor((value) / 60));
     let seconds = parseInt((value - ((minutes * 60))) % 60);
-
-
     let dMins = minutes;
     let dSecs = (seconds > 9 ? seconds : '0' + seconds);
-
     return dMins + ":" + dSecs;
 });
 
+
 Vue.component('mimodal', {
     data: function () {
-  return {
-    mitexto: "namesesion"
-  }
-},
-  props: ['msj'],
+        return {
+            mitexto: "namesesion"
+        }
+    },
+    props: ['msj'],
     template: '<div class="modal"> <main> <h2>{{msj}}</h2><input v-model="mitexto" type="text" ref="title">  <div class="botonera"> <div><button @click="close()">Confirmar</button> </div></div></main></div>',
-     methods: {
-    close: function () {
-        this.$emit('recibido',this.mitexto)
-      this.$parent.closemodal();
+    methods: {
+        close: function () {
+            this.$emit('recibido', this.mitexto)
+            this.$parent.closemodal();
+        }
     }
-  }
 })
 
 
@@ -31,7 +28,7 @@ var vm = new Vue({
     el: '#app',
     data: {
         a: {
-            misdata:"",
+            misdata: "",
             backup: "",
             act_time: 240,
             act_rounds: 4,
@@ -59,12 +56,12 @@ var vm = new Vue({
             status: "main",
             fontSize: 5,
             sesiones: [{
-                    nombre: "combate",
-                    rounds: 1,
-                    time: 3,
-                    desc: 60,
-                    preaviso: 0
-                },
+                nombre: "combate",
+                rounds: 1,
+                time: 3,
+                desc: 60,
+                preaviso: 0
+            },
                 {
                     nombre: "calentamiento",
                     rounds: 2,
@@ -82,25 +79,24 @@ var vm = new Vue({
             ],
         }
     },
-computed: {
-  activa: function () {
-    return  "ghg1"
-  }
-},
-created: function () {
-    var myself=this;
-    window.addEventListener('beforeunload', function (event) {
-      
-        myself.saveall();
-        console.log("guardado");
-    }, false);
+    computed: {
+        activa: function () {
+            return ""
+        }
+    },
+    created: function () {
+        var myself = this;
+        window.addEventListener('beforeunload', function (event) {
+            myself.saveall();
+            console.log("guardado");
+        }, false);
         if (localStorage.backup) {
-            console.log("cargoa");
+            console.log("cargo");
             this.a = JSON.parse(localStorage.backup);
-           // this.a.sesiontitle= "";
+            // this.a.sesiontitle= "";
         }
 
-  },
+    },
     /*created() {
         console.log(this.a.running)
      /*   window.addEventListener('beforeunload', autosave());
@@ -116,48 +112,49 @@ created: function () {
         }
     },*/
     methods: {
-        saveall: function() {
+        saveall: function () {
             this.a.backup = JSON.stringify(this.a);
             console.log(this.a.backup);
             console.log("guarddo");
             localStorage.backup = this.a.backup;
         },
-        pause: function() {
-            if (this.a.running == 3){
-         this.go();
-        } else {
-                        this.a.running = 3;
-            clearInterval(this.a.crono);
-        }
+        pause: function () {
+            if (this.a.running == 3) {
+                this.go();
+            } else {
+                this.a.running = 3;
+                clearInterval(this.a.crono);
+            }
 
         },
-        resume: function(){
+        resume: function () {
 
-         this.go();
+            this.go();
         },
-        kill: function() {
+        kill: function () {
             this.a.running = 0;
             clearInterval(this.a.crono);
 
         },
-        start:function(){
+        start: function () {
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
-                this.go();
+            this.go();
         },
-        go: function() {
+        go: function () {
             const myself = this.a;
             this.a.saveall;
             asalto();
+
             function asalto() {
                 myself.crono = setInterval(
-                    function() {
-                                  myself.running = 1;
+                    function () {
+                        myself.running = 1;
                         myself.minutos--;
                         if (myself.minutos == 0) {
                             clearInterval(myself.crono);
                             if (myself.rounds > 1) {
-                                
+
                                 myself.minutos = myself.act_desc;
                                 descanso();
                             } else {
@@ -168,7 +165,7 @@ created: function () {
                         function descanso() {
                             myself.running = 2;
                             myself.descrono = setInterval(
-                                function() {
+                                function () {
                                     myself.minutos--;
                                     if (myself.minutos < 0) {
                                         clearInterval(myself.descrono);
@@ -179,22 +176,19 @@ created: function () {
                                             asalto();
                                         } else {
                                             console.log("finito");
-                                          //      myself.running = 0;
+                                            //      myself.running = 0;
                                         }
                                     }
 
-                                }, 50);
+                                }, 1000);
                         }
-                    }, 50);
+                    }, 1000);
             }
-
-
         },
-        closemodal: function(){
-             console.log("cierro");
+        closemodal: function () {
+            console.log("cierro");
         },
-        add: function(variable, valor) {
-      
+        add: function (variable, valor) {
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] > this.a[variable + "_text"].length) {
@@ -202,11 +196,11 @@ created: function () {
                     return
                 }
             }
-                    console.log( this.a[variable]);
+            console.log(this.a[variable]);
             this.a[variable] += valor * 1;
         },
-        sub: function(variable, valor) {
-              console.log("cierro");
+        sub: function (variable, valor) {
+            console.log("cierro");
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] == 0) {
@@ -216,7 +210,8 @@ created: function () {
             }
             this.a[variable] -= (1 * valor) * (this.a[variable] > 0);
         },
-        setPanel(sesion) {},
+        setPanel(sesion) {
+        },
 
         setSesion(sesion) {
             this.a.act_rounds = sesion.rounds;
@@ -226,18 +221,18 @@ created: function () {
 
         },
         deleteSesion(event, item) {
-    //this.a.sesiontitle="dsff";
+            //this.a.sesiontitle="dsff";
             console.log(console.log(event.target.parentElement));
             event.target.parentElement.className += " delete";
             const todoIndex = this.a.sesiones.indexOf(item);
             var missesiones = this.a.sesiones;
-            setTimeout(function() {
+            setTimeout(function () {
                 missesiones.splice(todoIndex, 1);
             }, 800);
         },
         close(datos) {
-            console.log("llego" +datos);
-                                  var newitem = {
+            console.log("llego" + datos);
+            var newitem = {
                 nombre: datos,
                 rounds: this.a.act_rounds,
                 time: this.a.act_time,
@@ -245,11 +240,11 @@ created: function () {
                 preaviso: this.a.act_preaviso
             }
             this.a.sesiones.push(newitem);
-                        this.a.sesiontitle="";
+            this.a.sesiontitle = "";
         },
         addSesion() {
-console.log("pinffn");
-            this.a.sesiontitle="Nombre de la sesion?";
+            console.log("pinffn");
+            this.a.sesiontitle = "Nombre de la sesion?";
 
         }
     }
