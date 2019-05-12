@@ -6,16 +6,24 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title></title>
     <meta name="description" content="">
-    
     <meta name="viewport" content="width=device-width, user-scalable=no" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#008000" />
+    <meta name="theme-color" content="#7570cc" />
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" media="screen" href="css/main.css">
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-    <script src="https://unpkg.com/vue@2.0.1/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--script src="https://unpkg.com/vue@2.0.1/dist/vue.js"></script-->
+    <script>
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    window.addEventListener('resize', () => {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+    </script>
 </head>
 
 <body>
@@ -24,10 +32,10 @@
         <body class="home">
             <div id="wrap" v-bind:class="a.running_text[a.running]">
                 <mimodal v-if="a.sesiontitle!=''" :msj="a.sesiontitle" v-on:recibido='close'></mimodal>
-                <div id="main">
+                <div id="main" v-bind:class="'sts'+a.sts_panel">
                     <transition name="fade">
-                        <div v-if="a.sts_panel==0" id="panel_main" class="panel" key="save1">
-                            <div class="botonera"  v-if="a.running==0">
+                        <div v-if="a.sts_panel==0 || a.sts_panel==5" id="panel_main" class="panel" key="save1">
+                            <div class="botonera" v-if="a.running==0">
                                 <div id="asaltos">
                                     <button @click="sub('act_rounds')">-</button>
                                     <h2>Asaltos  {{a.act_rounds}}</h2>
@@ -45,28 +53,23 @@
                                 </div>
                                 <div id="preaviso">
                                     <button @click="sub('act_preaviso')">-</button>
-                                    <h2>preaviso {{a.act_preaviso_text[a.act_preaviso]}}</h2>
+                                    <h2>preaviso de {{a.act_preaviso_text[a.act_preaviso]}}</h2>
                                     <button @click="add('act_preaviso')">+</button>
                                 </div>
                             </div>
+
                             <div class="screen">
-                                
-                                <button v-if="a.running==3" @click="kill()" class="kill">
-                                    acabar
-                                </button>
-                          
+
+                                <h1 class="rot">{{a.running_text[a.running]}}</h1>
                                 <button v-if="a.running" @click="pause()">
                                     <h1> {{(a.act_rounds-a.rounds+1)}}/{{a.act_rounds }}</h1>
                                     <h1> {{a.minutos | time }}</h1>
-                                    <h1 v-if="a.running==1">pausa</h1>
-                                     <h1  v-if="a.running==3">continuar</h1>
-                                     <h1   v-if="a.running==4" > FIN </h1>
+                                    <h1 style="color:yellow"> {{digits | time}}</h1>
+                                    <h2 v-if="a.running==1">II</h2>
+                                    <h2  v-if="a.running==3">continuar</h2>
+                                    <h1   v-if="a.running==4" > FIN </h1>
                                 </button>
                                 <button v-if="!a.running" @click="start()">
-                                    <div class="info">
-                                        <h3>{{a.act_rounds}} Rounds de
-                                    {{a.act_time | time}} sDescanso {{a.act_desc | time}}     </h3>
-                                    </div>
                                     <h1>GO</h1>
                                 </button>
                             </div>
@@ -82,6 +85,9 @@
                                     <button @click="sub('act_theme')">-</button>
                                     <h2>plantilla {{a.act_theme_text[a.act_theme]}}</h2>
                                     <button @click="add('act_theme')">+</button>
+                                </div>
+                                <div>
+                                    <button @click="reset()">Reset</button>
                                 </div>
                             </div>
                         </div>
@@ -108,18 +114,18 @@
                                     <button @click="add('sonido_preaviso')">+</button>
                                 </div>
                             </div>
+
                         </div>
                         <div v-if="a.sts_panel==3" id="panel_sesiones" class="panel" key="save4">
                             <button @click="addSesion">Añadir sesion</button>
                             <div class="botonera">
-                                <div v-for="item in a.sesiones" v-bind:key="item" v-bind:class="{ activa: ((item.rounds==a.act_rounds) && (item.time==a.act_time) && (item.desc==a.act_desc))}">
-                                    <button @click="setSesion(item)" class="text" ><p> {{ item.nombre }}</p> {{ item.rounds }} -{{ item.time | time}} -{{ item.desc | time }}- {{ a.act_preaviso_text[item.preaviso] }}</button>
-                                    <button @click="deleteSesion($event,item)">x</button>
+                                <div v-for="item in a.sesiones"  enter-stagger="50"
+         leave-stagger="0" v-bind:class="{ activa: ((item.rounds==a.act_rounds) && (item.time==a.act_time) && (item.desc==a.act_desc))}">
+                                    <button @click="setSesion(item)" class="text">
+                                        <p> {{ item.nombre }}</p> {{ item.rounds }} -{{ item.time | time}} -{{ item.desc | time }}- {{ a.act_preaviso_text[item.preaviso] }}
+                                    </button>
+                                    <button class="clear" @click="deleteSesion($event,item)"></button>
                                 </div>
-                            </div>
-                            <div class="info">
-                                <h3>{{a.act_rounds}} Rounds de
-                                    {{a.act_time | time}} sDescanso {{a.act_desc | time}}     </h3>
                             </div>
                         </div>
                         <div v-if="a.sts_panel==4" id="panel_trainer" class="panel" key="save5">
@@ -131,13 +137,28 @@
                         </div>
                     </transition>
                 </div>
-                <div class="nav " v-if="!a.running">
-                    <button v-if="a.sts_panel>0" @click="a.sts_panel = 0" class="back"> Principal</button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 1"></button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 2"></button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 3"></button>
-                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 4"> </button>
+                     <transition name="fade">
+                <div class="nav ">
+                                  
+                    <button v-if="a.sts_panel>0"   @click="back()" class="back">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve" width="512px" height="512px"><g><g><polygon points="207.093,30.187 176.907,0 48.907,128 176.907,256 207.093,225.813 109.28,128   " fill="#FFFFFF"/></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg> </button> 
+                    <button  v-if="a.sts_panel==0" @click="a.sts_panel = 1" >
+                        <svg height="48" viewBox="0 0 48 48" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h48v48h-48z" fill="none"/><path d="M38.86 25.95c.08-.64.14-1.29.14-1.95s-.06-1.31-.14-1.95l4.23-3.31c.38-.3.49-.84.24-1.28l-4-6.93c-.25-.43-.77-.61-1.22-.43l-4.98 2.01c-1.03-.79-2.16-1.46-3.38-1.97l-.75-5.3c-.09-.47-.5-.84-1-.84h-8c-.5 0-.91.37-.99.84l-.75 5.3c-1.22.51-2.35 1.17-3.38 1.97l-4.98-2.01c-.45-.17-.97 0-1.22.43l-4 6.93c-.25.43-.14.97.24 1.28l4.22 3.31c-.08.64-.14 1.29-.14 1.95s.06 1.31.14 1.95l-4.22 3.31c-.38.3-.49.84-.24 1.28l4 6.93c.25.43.77.61 1.22.43l4.98-2.01c1.03.79 2.16 1.46 3.38 1.97l.75 5.3c.08.47.49.84.99.84h8c.5 0 .91-.37.99-.84l.75-5.3c1.22-.51 2.35-1.17 3.38-1.97l4.98 2.01c.45.17.97 0 1.22-.43l4-6.93c.25-.43.14-.97-.24-1.28l-4.22-3.31zm-14.86 5.05c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></button>
+                    <button  v-if="a.sts_panel==0" @click="a.sts_panel = 2" >
+<svg height="48" viewBox="0 0 48 48" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h48v48h-48z" fill="none"/><path d="M24 6v18.55c-.94-.33-1.94-.55-3-.55-4.97 0-9 4.03-9 9s4.03 9 9 9c4.63 0 8.4-3.51 8.9-8h.1v-22h8v-6h-14z"/></svg></button>
+                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 3"><svg height="48" viewBox="0 0 48 48" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h48v48h-48z" fill="none"/><path d="M34 6h-24c-2.21 0-4 1.79-4 4v28c0 2.21 1.79 4 4 4h28c2.21 0 4-1.79 4-4v-24l-8-8zm-10 32c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm6-20h-20v-8h20v8z"/></svg>
+</button>
+                    <button v-if="a.sts_panel==0" @click="a.sts_panel = 4"><svg height="48" viewBox="0 0 48 48" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M-838-2232H562v3600H-838z" fill="none"/><path d="M16 10v28l22-14z"/><path d="M0 0h48v48H0z" fill="none"/></svg> </button>
+               
+
                 </div>
+            </transition>
+                <!--h1 class="activa " v-if="!a.running"-->
+                <div class="rot_info activa"> <h1>
+                       {{a.panel_text[a.sts_panel]}}
+                </h1>
+                </div>
+                          
             </div>
         </body>
 

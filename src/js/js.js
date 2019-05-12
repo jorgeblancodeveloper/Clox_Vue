@@ -1,3 +1,4 @@
+
 Vue.filter('time', function (value) {
     let minutes = parseInt(Math.floor((value) / 60));
     let seconds = parseInt((value - ((minutes * 60))) % 60);
@@ -19,42 +20,47 @@ Vue.component('mimodal', {
         close: function () {
             this.$emit('recibido', this.mitexto)
             this.$parent.closemodal();
+
         }
     }
 })
 
-
 var vm = new Vue({
     el: '#app',
     data: {
+        sts_reset: 0,
+        second: 0,
+        digits: 0,
         a: {
             misdata: "",
             backup: "",
+            stop_timer:0,
             act_time: 240,
             act_rounds: 4,
             act_desc: 60,
             act_preaviso: 1,
             act_preaviso_text: ["asalto", "descanso", "asalto y descanso", "nada"],
             act_idioma_text: ["Español", "Catalan", "ingles"],
+            panel_text: ["", "Opciones", "Sonidos", "Sesiones", "Trainer", "Combate"],
             act_sonidos_text: ["sirena", "campana", "dong", "buzzer", "slap", "timbre"],
             sonido_asaltos: 1,
             sonido_descanso: 0,
             sonido_preaviso: 2,
             sonido_fin: 3,
+            click: "mp3/click.mp3",
+            fail: "mp3/fail.mp3",
             act_idioma: 0,
             act_theme_text: ["black", "color", "white"],
-            running_text: ["none", "box", "rest", "pause", "end"],
+            running_text: ["", "READY", "BOX", "REST", "PAUSE", "FIN"],
+            sonidos_mp3: ["mp3/sirena.mp3", "mp3/campana.mp3", "mp3/dong.mp3", "mp3/buzzer.mp3", "mp3/slap.mp3", "mp3/timbre.mp3"],
             act_theme: 1,
             sesiontitle: "",
             sesionName: "Nombre sesion",
-            txtmodal: "jkl",
             rounds: 0,
-            segundos: 60,
             minutos: 2,
             running: 0,
             sts_panel: 0,
-            status: "main",
-            fontSize: 5,
+
             sesiones: [{
                 nombre: "combate",
                 rounds: 1,
@@ -62,17 +68,18 @@ var vm = new Vue({
                 desc: 60,
                 preaviso: 0
             },
+
                 {
                     nombre: "calentamiento",
                     rounds: 2,
-                    time: 2,
+                    time: 180,
                     desc: 60,
                     preaviso: 0
                 },
                 {
                     nombre: "entrenamiento",
                     rounds: 3,
-                    time: 1,
+                    time: 180,
                     desc: 60,
                     preaviso: 0
                 }
@@ -100,22 +107,17 @@ var vm = new Vue({
     /*created() {
         console.log(this.a.running)
      /*   window.addEventListener('beforeunload', autosave());
+
         if (localStorage.backup) {
-            console.log("cargoa");
             this.a = JSON.parse(localStorage.backup);
-           // this.a.sesiontitle= "";
         }
-        var my = this
-        function autosave() {
-            console.log("mevoy");
-            // my.saveall()
-        }
-    },*/
+    },
+
     methods: {
+
         saveall: function () {
+
             this.a.backup = JSON.stringify(this.a);
-            console.log(this.a.backup);
-            console.log("guarddo");
             localStorage.backup = this.a.backup;
         },
         pause: function () {
@@ -126,17 +128,30 @@ var vm = new Vue({
                 clearInterval(this.a.crono);
             }
 
+
+                myself.crono = setInterval(
+                    function() {
+                        myself.digits--;
+                        if ((myself.digits <= 0) || (myself.a.stop_timer==1)) {
+                            clearInterval(myself.crono);
+                            console.log("muerto");
+                            resolve("done");
+                        }
+                    }, 150);
+            });
         },
         resume: function () {
+
 
             this.go();
         },
         kill: function () {
             this.a.running = 0;
             clearInterval(this.a.crono);
-
+            clearInterval(this.a.descrono);
         },
         start: function () {
+
             this.a.rounds = this.a.act_rounds;
             this.a.minutos = this.a.act_time;
             this.go();
@@ -189,6 +204,7 @@ var vm = new Vue({
             console.log("cierro");
         },
         add: function (variable, valor) {
+
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] > this.a[variable + "_text"].length) {
@@ -201,6 +217,7 @@ var vm = new Vue({
         },
         sub: function (variable, valor) {
             console.log("cierro");
+
             if (valor == undefined) valor = 1;
             if (this.a[variable + "_text"]) {
                 if (this.a[variable] == 0) {
@@ -212,7 +229,6 @@ var vm = new Vue({
         },
         setPanel(sesion) {
         },
-
         setSesion(sesion) {
             this.a.act_rounds = sesion.rounds;
             this.a.act_time = sesion.time;
@@ -246,6 +262,9 @@ var vm = new Vue({
             console.log("pinffn");
             this.a.sesiontitle = "Nombre de la sesion?";
 
+            } else {
+                this.a.sesiontitle = "¿Nombre de la sesion?";
+            }
         }
     }
 })
